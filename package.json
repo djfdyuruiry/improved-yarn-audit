@@ -1,5 +1,6 @@
 {
   "name": "improved-yarn-audit",
+  "description": "A wrapper around yarn audit that fixes many issues",
   "version": "1.0.0-rc1",
   "license": "MIT",
   "author": "Matthew Snoddy",
