@@ -2,7 +2,11 @@
 
 This project aims to improve upon the existing Yarn package manager audit functionality.
 
+GitHub Repo: https://github.com/djfdyuruiry/improved-yarn-audit
+
 [![NPM](https://nodei.co/npm/improved-yarn-audit.png)](https://nodei.co/npm/improved-yarn-audit/)
+
+----
 
 Currently `yarn audit` has several issues making it difficult to use in a CI pipeline:
 
