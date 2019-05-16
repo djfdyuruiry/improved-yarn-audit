@@ -1,0 +1,241 @@
+#! /usr/bin/env node
+const child_process = require("child_process")
+
+const optionFlags = {
+    debug: ["--debug", "-d"],
+    exclude: ["--exclude", "-e"],
+    help: ["--help", "-h"],
+    retryNetworkIssues: ["--retry-on-network-failure", "-r"],
+    severity: ["--min-severity", "-s"]
+}
+
+const severityToIntMap = {
+    info: 0,
+    low: 1,
+    moderate: 2,
+    high: 3,
+    critical: 4
+}
+
+let minSeverityName = "low"
+let minSeverity = severityToIntMap[minSeverityName]
+let excludedAdvisories = []
+let debugEnabled = false
+let shouldRetryNetworkErrors = false
+
+function printAuditReport(filteredAuditAdvisories, severityIgnoredAuditAdvisories, excludedAuditAdvisories) {
+    let filterSeverityAndExcludedReport = ""
+
+    if (severityIgnoredAuditAdvisories.length > 0) {
+        filterSeverityAndExcludedReport +=
+            `\n${severityIgnoredAuditAdvisories.length} ignored because ` +
+            `severity was lower than "${minSeverityName}"\n`
+    }
+
+    if (excludedAuditAdvisories.length > 0) {
+        filterSeverityAndExcludedReport +=
+            `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
+    }
+
+    console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filterSeverityAndExcludedReport}`)
+
+    filteredAuditAdvisories.forEach(a => console.log(`Vulnerability Found: ${a.url}`))
+
+    if (filteredAuditAdvisories.length > 0) {
+        console.log("\nRun `yarn audit` for more information\n")
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve=>{
+        setTimeout(resolve,ms)
+    })
+}
+
+function parseAuditJson(auditJson) {
+    try {
+        return JSON.parse(auditJson)
+    } catch(ex) {
+        if (auditJson.includes("Error: Request failed ")) {
+            // network error trying to get audit report
+            return "retry"
+        }
+
+        console.error("ERROR: Unable to parse yarn audit output, raw output:")
+        console.error(auditJson)
+
+        process.exit(1)
+    }
+}
+
+async function runYarnAudit() {
+    console.log("Running yarn audit...\n")
+
+    let stdOutAndErr = []
+    let concatToStdOutAndErr = d => stdOutAndErr = stdOutAndErr.concat(d)
+
+    let yarnProcess = child_process.spawn("yarn", ["audit", "--json"])
+
+    yarnProcess.stdout.on("data", concatToStdOutAndErr)
+    yarnProcess.stderr.on("data", concatToStdOutAndErr)
+
+    let exitCode = await new Promise((resolve, reject) => {
+        yarnProcess.on("exit", resolve)
+        yarnProcess.on("error", reject)
+    })
+
+    let output = Buffer.concat(stdOutAndErr).toString()
+
+    let arrayJson = output.replace(/\r?\n|\r/g, ",").replace(/,$/, "")
+    let auditJson = `[${arrayJson}]`
+    let auditResults = parseAuditJson(auditJson)
+
+    if (auditResults === "retry") {
+        let error = "ERROR: Network error occurred when querying audit registry"
+
+        if (!shouldRetryNetworkErrors) {
+            errorAndExit(`${error}:\n\n${output}`)
+        }
+
+        console.error(`${error}, retrying...\n`)
+
+        await sleep(1000)
+        return await runYarnAudit()
+    }
+
+    if (exitCode === 1) {
+        console.error("ERROR: Yarn audit error:")
+        console.error(toJson(auditResults))
+
+        process.exit(1)
+    }
+
+    return auditResults
+}
+
+function severityShouldBeIgnored(severity) {
+    return severityToIntMap[severity] < minSeverity
+}
+
+function logDebug(str) {
+    if (debugEnabled) {
+        console.log(str)
+    }
+}
+
+async function runAuditReport() {
+    let auditResults = await runYarnAudit()
+    let auditSummary = auditResults.pop()
+
+    logDebug(`Audit summary:\n${toJson(auditSummary)}\n`)
+
+    let auditAdvisories = auditResults.filter(r => r.type === "auditAdvisory")
+        .map(r => r.data.advisory)
+
+    let filteredAuditAdvisories = auditAdvisories.filter(a =>
+        !severityShouldBeIgnored(a.severity) &&
+        !excludedAdvisories.includes(a.id)
+    )
+
+    let excludedAuditAdvisories = auditAdvisories.filter(a =>
+        excludedAdvisories.includes(a.id) &&
+        !severityShouldBeIgnored(a.severity)
+    )
+    let severityIgnoredAuditAdvisories = auditAdvisories.map(a => a.severity)
+        .filter(severityShouldBeIgnored)
+
+    logDebug(`Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
+    logDebug(`Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
+
+    printAuditReport(
+        filteredAuditAdvisories,
+        severityIgnoredAuditAdvisories,
+        excludedAuditAdvisories
+    )
+
+    return filteredAuditAdvisories.length
+}
+
+function toJson(value) {
+    return JSON.stringify(value, null, 2)
+}
+
+function printUsageAndExit() {
+    errorAndExit(`
+auditable [OPTIONS]
+
+Options:
+
+    --min-severity, -s                Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
+    --exclude, -e                     CSV list of advisory ID's to ignore, e.x. 432,564
+    --retry-on-network-failure, -r    Retry audit if NPM registry throws a network error
+    --debug, -d                       Print out raw audit report's and advisory details
+    --help, -h                        Show this information
+`)
+}
+
+function errorAndExit(msg) {
+    console.error(msg)
+    process.exit(1)
+}
+
+function isNumbersCsv(str) {
+    return str.trim()
+        .replace(/\s/g, "") // filter out spaces
+        .match(/^(,|\d)*\d$/) // number csv regex (without spaces)
+}
+
+function isNullOrEmpty(str) {
+    return !str || str.trim() == ""
+}
+
+function isFlag(flags, ...strs) {
+    return strs.filter(s =>
+        !isNullOrEmpty(s) && flags.includes(s.trim().toLowerCase())
+    ).length > 0
+}
+
+function parseCommandLineArgs() {
+    process.argv.reduce((a, b) => {
+        if (isFlag(optionFlags.exclude, a) && !isNullOrEmpty(b)) {
+            if (isNumbersCsv(b)) {
+                excludedAdvisories = JSON.parse(`[${b}]`)
+            } else {
+                errorAndExit(`ERROR: Unable to parse --exclude option value: ${b}`)
+            }
+        } else if (isFlag(optionFlags.severity, a) && !isNullOrEmpty(b)) {
+            if (![null, undefined].includes(severityToIntMap[b.toLowerCase()])) {
+                minSeverityName = b.trim().toLowerCase()
+                minSeverity = severityToIntMap[minSeverityName]
+            } else {
+                errorAndExit(`ERROR: Unrecognised --min-severity option value: ${b.trim()}`)
+            }
+        } else if (isFlag(optionFlags.debug, a, b)) {
+            debugEnabled = true
+        } else if (isFlag(optionFlags.help, a, b)) {
+            printUsageAndExit()
+        } else if (isFlag(optionFlags.retryNetworkIssues, a, b)) {
+            shouldRetryNetworkErrors = true
+        }
+
+        return b
+    }, "")
+}
+
+async function main() {
+    parseCommandLineArgs()
+
+    console.log(`Minimum severity level to report: ${minSeverityName}`)
+
+    console.log(
+        excludedAdvisories.length > 0 ?
+            `Excluded Advisories: ${JSON.stringify(excludedAdvisories)}\n` :
+            ""
+    )
+
+    let advisoryCount = await runAuditReport()
+
+    process.exit(advisoryCount)
+}
+
+main()
