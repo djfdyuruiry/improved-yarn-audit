@@ -47,9 +47,7 @@ function printAuditReport(filteredAuditAdvisories, severityIgnoredAuditAdvisorie
 }
 
 function sleep(ms) {
-    return new Promise(resolve=>{
-        setTimeout(resolve,ms)
-    })
+    return new Promise(r => setTimeout(r, ms))
 }
 
 function parseAuditJson(auditJson) {
@@ -94,7 +92,7 @@ async function runYarnAudit() {
         let error = "ERROR: Network error occurred when querying audit registry"
 
         if (!shouldRetryNetworkErrors) {
-            errorAndExit(`${error}:\n\n${output}`)
+            errorAndExit(`${error}\n\n${output}`)
         }
 
         console.error(`${error}, retrying...\n`)
@@ -104,10 +102,7 @@ async function runYarnAudit() {
     }
 
     if (exitCode === 1) {
-        console.error("ERROR: Yarn audit error:")
-        console.error(toJson(auditResults))
-
-        process.exit(1)
+        errorAndExit(`ERROR: Yarn audit error:\n${toJson(auditResults)}`)
     }
 
     return auditResults
@@ -186,7 +181,7 @@ function isNumbersCsv(str) {
 }
 
 function isNullOrEmpty(str) {
-    return !str || str.trim() == ""
+    return !str || str.trim() === ""
 }
 
 function isFlag(flags, ...strs) {
