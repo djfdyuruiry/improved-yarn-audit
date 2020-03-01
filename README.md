@@ -44,12 +44,20 @@ yarn run improved-yarn-audit --min-severity moderate
 
 ## Excluding Advisories
 
-Often dev dependencies can become outdated and the package maintainer no long provides updates. This leads to audit advisories that will never affect your production code.
+Often dev dependencies can become outdated and the package maintainer no longer provides updates. This leads to audit advisories that will never affect your production code.
 
 To remedy this, you can pass a csv list of advisory IDs to ignore.
 
 ```
 yarn run improved-yarn-audit --exclude 253,456,811
+```
+
+## Ignore All Dev Advisories
+
+If you want to ignore any advisories from dev dependencies, you can use the `--ignore-dev-deps` flag to do this.
+
+```
+yarn run improved-yarn-audit --ignore-dev-deps
 ```
 
 ## Retrying Network Issues
