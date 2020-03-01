@@ -9,5 +9,8 @@
   "files": [
     "README.md",
     "bin/yarn-audit"
-  ]
+  ],
+  "scripts": {
+    "test": "./bin/improved-yarn-audit"
+  }
 }
