@@ -1,12 +1,14 @@
 #! /usr/bin/env node
 const child_process = require("child_process")
+const fs = require("fs")
 
 const optionFlags = {
     debug: ["--debug", "-d"],
     exclude: ["--exclude", "-e"],
     help: ["--help", "-h"],
     retryNetworkIssues: ["--retry-on-network-failure", "-r"],
-    severity: ["--min-severity", "-s"]
+    severity: ["--min-severity", "-s"],
+    ignoreDevDependecies: ["--ignore-dev-deps", "-i"]
 }
 
 const severityToIntMap = {
@@ -20,30 +22,44 @@ const severityToIntMap = {
 let minSeverityName = "low"
 let minSeverity = severityToIntMap[minSeverityName]
 let excludedAdvisories = []
+let ignoreDevDependecies = false
 let debugEnabled = false
 let shouldRetryNetworkErrors = false
 
-function printAuditReport(filteredAuditAdvisories, severityIgnoredAuditAdvisories, excludedAuditAdvisories) {
-    let filterSeverityAndExcludedReport = ""
+function printAuditReport(
+    filteredAuditAdvisories,
+    devDependencyAdvisoryIds,
+    severityIgnoredAuditAdvisories,
+    excludedAuditAdvisories
+) {
+    let filteredAdvisoryReport = ""
+
+    if (ignoreDevDependecies && devDependencyAdvisoryIds.length > 0) {
+        filteredAdvisoryReport +=
+            `\n${devDependencyAdvisoryIds.length} ignored because ` +
+            `they are dev dependencies\n`
+    }
 
     if (severityIgnoredAuditAdvisories.length > 0) {
-        filterSeverityAndExcludedReport +=
+        filteredAdvisoryReport +=
             `\n${severityIgnoredAuditAdvisories.length} ignored because ` +
             `severity was lower than "${minSeverityName}"\n`
     }
 
     if (excludedAuditAdvisories.length > 0) {
-        filterSeverityAndExcludedReport +=
+        filteredAdvisoryReport +=
             `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
     }
 
-    console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filterSeverityAndExcludedReport}`)
+    console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`)
 
     filteredAuditAdvisories.forEach(a => console.log(`Vulnerability Found: ${a.url}`))
 
     if (filteredAuditAdvisories.length > 0) {
-        console.log("\nRun `yarn audit` for more information\n")
+        console.log()
     }
+
+    console.log("Run `yarn audit` for more information")
 }
 
 function sleep(ms) {
@@ -112,13 +128,62 @@ function severityShouldBeIgnored(severity) {
     return severityToIntMap[severity] < minSeverity
 }
 
+function flatMap (arr, callback) {
+    let arrays = arr.map(callback)
+    let returnArray = []
+
+    arrays.forEach(a => a.forEach(i => returnArray.push(i)))
+
+    return returnArray
+}
+
 function logDebug(str) {
     if (debugEnabled) {
         console.log(str)
     }
 }
 
+function getDevDependenciesRegex() {
+    let packageJsonExists = fs.existsSync("package.json")
+
+    if (!packageJsonExists) {
+        console.log("WARNING: No package.json was found in the current working directory")
+        logDebug("Dev dependencies will not be ignored")
+        return
+    }
+
+    let packageJson = fs.readFileSync("package.json")
+    let package = JSON.parse(packageJson)
+
+    if (
+        !(package instanceof Object)
+        || !(package.devDependencies instanceof Object)
+    ) {
+        return
+    }
+
+    let devDependencies = Object.keys(package.devDependencies)
+
+    if (devDependencies.length < 1) {
+        logDebug("No dev dependencies installed")
+        return
+    }
+
+    let devDependenciesCsv = devDependencies.join(", ")
+
+    logDebug(`Dev dependencies: ${devDependenciesCsv}`)
+
+    ignoreDevDependecies
+        ? logDebug("Dev dependencies will be ignored")
+        : logDebug("Dev dependencies will not be ignored") 
+
+    let devDependenciesOr = devDependencies.map(d => `(${d})`).join("|")
+
+    return new RegExp(`^${devDependenciesOr}>.*$`)
+}
+
 async function runAuditReport() {
+    let devDependenciesRegex = getDevDependenciesRegex()
     let auditResults = await runYarnAudit()
     let auditSummary = auditResults.pop()
 
@@ -126,10 +191,27 @@ async function runAuditReport() {
 
     let auditAdvisories = auditResults.filter(r => r.type === "auditAdvisory")
         .map(r => r.data.advisory)
+    
+    let devDependencyAdvisories = []
+    
+    if (devDependenciesRegex) {
+        devDependencyAdvisories = auditAdvisories.filter(a =>
+            flatMap(a.findings, f => f.paths).every(d => d.match(devDependenciesRegex))
+        )
+    }
+
+    let devDependencyAdvisoryIds = devDependencyAdvisories.map(d => d.id)
 
     let filteredAuditAdvisories = auditAdvisories.filter(a =>
-        !severityShouldBeIgnored(a.severity) &&
-        !excludedAdvisories.includes(a.id)
+        (
+            !severityShouldBeIgnored(a.severity)
+            && !excludedAdvisories.includes(a.id)
+        )
+        &&
+        (
+            !devDependencyAdvisoryIds.includes(a.id)
+            || !ignoreDevDependecies
+        )
     )
 
     let excludedAuditAdvisories = auditAdvisories.filter(a =>
@@ -139,16 +221,18 @@ async function runAuditReport() {
     let severityIgnoredAuditAdvisories = auditAdvisories.map(a => a.severity)
         .filter(severityShouldBeIgnored)
 
+    logDebug(`Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
     logDebug(`Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
     logDebug(`Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
 
     printAuditReport(
         filteredAuditAdvisories,
+        devDependencyAdvisoryIds,
         severityIgnoredAuditAdvisories,
         excludedAuditAdvisories
     )
 
-    return filteredAuditAdvisories.length
+    return filteredAuditAdvisories.length 
 }
 
 function toJson(value) {
@@ -164,6 +248,7 @@ Options:
     --min-severity, -s                Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
     --exclude, -e                     CSV list of advisory ID's to ignore, e.x. 432,564
     --retry-on-network-failure, -r    Retry audit if NPM registry throws a network error
+    --ignore-dev-deps, -i             Ignore advisories for dev dependencies
     --debug, -d                       Print out raw audit report's and advisory details
     --help, -h                        Show this information
 `)
@@ -211,6 +296,8 @@ function parseCommandLineArgs() {
             printUsageAndExit()
         } else if (isFlag(optionFlags.retryNetworkIssues, a, b)) {
             shouldRetryNetworkErrors = true
+        } else if (isFlag(optionFlags.ignoreDevDependecies, a, b)) {
+            ignoreDevDependecies = true
         }
 
         return b
