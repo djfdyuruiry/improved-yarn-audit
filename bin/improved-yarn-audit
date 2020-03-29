@@ -66,17 +66,20 @@ function sleep(ms) {
     return new Promise(r => setTimeout(r, ms))
 }
 
-function parseAuditJson(auditJson) {
+function parseAuditJson(jsonStringsArray) {
     try {
-        return JSON.parse(auditJson)
+        return jsonStringsArray.filter(a => a)
+            .map(a => {
+                return JSON.parse(a)
+            })
     } catch(ex) {
-        if (auditJson.includes("Error: Request failed ")) {
+        if (jsonStringsArray.find(a => a.includes("Error: Request failed "))) {
             // network error trying to get audit report
             return "retry"
         }
 
-        console.error("ERROR: Unable to parse yarn audit output, raw output:")
-        console.error(auditJson)
+        console.error(`ERROR: Unable to parse yarn audit output: ${ex}`)
+        console.error("Try running `yarn audit` for more info")
 
         process.exit(1)
     }
@@ -100,9 +103,8 @@ async function runYarnAudit() {
 
     let output = Buffer.concat(stdOutAndErr).toString()
 
-    let arrayJson = output.replace(/\r?\n|\r/g, ",").replace(/,$/, "")
-    let auditJson = `[${arrayJson}]`
-    let auditResults = parseAuditJson(auditJson)
+    let jsonStringsArray = output.replace(/\r?\n|\r/g, "\n").split("\n")
+    let auditResults = parseAuditJson(jsonStringsArray)
 
     if (auditResults === "retry") {
         let error = "ERROR: Network error occurred when querying audit registry"
