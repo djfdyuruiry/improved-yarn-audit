@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "express": "^2.0.0"
+    "express": "^3.11.0"
   },
   "devDependencies": {
     "axios": "^0.1.0"
