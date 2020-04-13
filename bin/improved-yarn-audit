@@ -3,21 +3,23 @@ const child_process = require("child_process")
 const fs = require("fs")
 
 const optionFlags = {
-    debug: ["--debug", "-d"],
-    exclude: ["--exclude", "-e"],
-    help: ["--help", "-h"],
-    retryNetworkIssues: ["--retry-on-network-failure", "-r"],
-    severity: ["--min-severity", "-s"],
-    ignoreDevDependecies: ["--ignore-dev-deps", "-i"]
+  debug: ["--debug", "-d"],
+  exclude: ["--exclude", "-e"],
+  help: ["--help", "-h"],
+  retryNetworkIssues: ["--retry-on-network-failure", "-r"],
+  severity: ["--min-severity", "-s"],
+  ignoreDevDependecies: ["--ignore-dev-deps", "-i"]
 }
 
 const severityToIntMap = {
-    info: 0,
-    low: 1,
-    moderate: 2,
-    high: 3,
-    critical: 4
+  info: 0,
+  low: 1,
+  moderate: 2,
+  high: 3,
+  critical: 4
 }
+
+const exclusionsFileName = ".iyarc"
 
 let minSeverityName = "low"
 let minSeverity = severityToIntMap[minSeverityName]
@@ -26,300 +28,375 @@ let ignoreDevDependecies = false
 let debugEnabled = false
 let shouldRetryNetworkErrors = false
 
-function printAuditReport(
-    filteredAuditAdvisories,
-    devDependencyAdvisoryIds,
-    severityIgnoredAuditAdvisories,
-    excludedAuditAdvisories
-) {
-    let filteredAdvisoryReport = ""
-
-    if (ignoreDevDependecies && devDependencyAdvisoryIds.length > 0) {
-        filteredAdvisoryReport +=
-            `\n${devDependencyAdvisoryIds.length} ignored because ` +
-            `they are dev dependencies\n`
-    }
-
-    if (severityIgnoredAuditAdvisories.length > 0) {
-        filteredAdvisoryReport +=
-            `\n${severityIgnoredAuditAdvisories.length} ignored because ` +
-            `severity was lower than "${minSeverityName}"\n`
-    }
-
-    if (excludedAuditAdvisories.length > 0) {
-        filteredAdvisoryReport +=
-            `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
-    }
-
-    console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`)
-
-    filteredAuditAdvisories.forEach(a => console.log(`Vulnerability Found: ${a.url}`))
-
-    if (filteredAuditAdvisories.length > 0) {
-        console.log()
-    }
-
-    console.log("Run `yarn audit` for more information")
-}
-
-function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms))
-}
-
-function parseAuditJson(jsonStringsArray) {
-    try {
-        return jsonStringsArray.filter(a => a)
-            .map(a => {
-                return JSON.parse(a)
-            })
-    } catch(ex) {
-        if (jsonStringsArray.find(a => a.includes("Error: Request failed "))) {
-            // network error trying to get audit report
-            return "retry"
-        }
-
-        console.error(`ERROR: Unable to parse yarn audit output: ${ex}`)
-        console.error("Try running `yarn audit` for more info")
-
-        process.exit(1)
-    }
-}
-
-async function runYarnAudit() {
-    console.log("Running yarn audit...\n")
-
-    let stdOutAndErr = []
-    let concatToStdOutAndErr = d => stdOutAndErr = stdOutAndErr.concat(d)
-
-    let yarnProcess = child_process.spawn("yarn", ["audit", "--json"])
-
-    yarnProcess.stdout.on("data", concatToStdOutAndErr)
-    yarnProcess.stderr.on("data", concatToStdOutAndErr)
-
-    let exitCode = await new Promise((resolve, reject) => {
-        yarnProcess.on("exit", resolve)
-        yarnProcess.on("error", reject)
-    })
-
-    let output = Buffer.concat(stdOutAndErr).toString()
-
-    let jsonStringsArray = output.replace(/\r?\n|\r/g, "\n").split("\n")
-    let auditResults = parseAuditJson(jsonStringsArray)
-
-    if (auditResults === "retry") {
-        let error = "ERROR: Network error occurred when querying audit registry"
-
-        if (!shouldRetryNetworkErrors) {
-            errorAndExit(`${error}\n\n${output}`)
-        }
-
-        console.error(`${error}, retrying...\n`)
-
-        await sleep(1000)
-        return await runYarnAudit()
-    }
-
-    if (exitCode === 1) {
-        errorAndExit(`ERROR: Yarn audit error:\n${toJson(auditResults)}`)
-    }
-
-    return auditResults
-}
-
 function severityShouldBeIgnored(severity) {
-    return severityToIntMap[severity] < minSeverity
+  return severityToIntMap[severity] < minSeverity
 }
 
 function flatMap (arr, callback) {
-    let arrays = arr.map(callback)
-    let returnArray = []
+  let arrays = arr
+  let returnArray = []
 
-    arrays.forEach(a => a.forEach(i => returnArray.push(i)))
+  if (typeof callback === "function") {
+    arrays = arr.map(callback)
+  }
 
-    return returnArray
+  arrays.forEach(a => a.forEach(i => returnArray.push(i)))
+
+  return returnArray
 }
 
 function logDebug(str) {
-    if (debugEnabled) {
-        console.log(str)
-    }
+  if (debugEnabled) {
+    console.log(`DEBUG: ${str}`)
+  }
+}
+
+function buildAdvisoryReport(
+  devDependencyAdvisoryIds,
+  severityIgnoredAuditAdvisories,
+  excludedAuditAdvisories
+) {
+  let filteredAdvisoryReport = ""
+
+  if (ignoreDevDependecies && devDependencyAdvisoryIds.length > 0) {
+    filteredAdvisoryReport +=
+      `\n${devDependencyAdvisoryIds.length} ignored because ` +
+      `they are dev dependencies\n`
+  }
+
+  if (severityIgnoredAuditAdvisories.length > 0) {
+    filteredAdvisoryReport +=
+      `\n${severityIgnoredAuditAdvisories.length} ignored because ` +
+      `severity was lower than "${minSeverityName}"\n`
+  }
+
+  if (excludedAuditAdvisories.length > 0) {
+    filteredAdvisoryReport +=
+      `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
+  }
+
+  return filteredAdvisoryReport
+}
+
+function printAuditReport(
+  filteredAuditAdvisories,
+  devDependencyAdvisories,
+  devDependencyAdvisoryIds,
+  severityIgnoredAuditAdvisories,
+  excludedAuditAdvisories
+) {
+  logDebug(`Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
+  logDebug(`Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
+  logDebug(`Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
+
+  let filteredAdvisoryReport = buildAdvisoryReport(
+    devDependencyAdvisoryIds,
+    severityIgnoredAuditAdvisories,
+    excludedAuditAdvisories
+  )
+
+  console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`)
+
+  filteredAuditAdvisories.forEach(a => console.log(`Vulnerability Found: ${a.severity.toUpperCase()} - ${a.url}`))
+
+  if (filteredAuditAdvisories.length > 0) {
+    console.log()
+  }
+
+  console.log("Run `yarn audit` for more information")
+}
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms))
+
+function isNonExcludedAdvisory(advisory, devDependencyAdvisoryIds) {
+  return (
+    !severityShouldBeIgnored(advisory.severity)
+    && !excludedAdvisories.includes(advisory.id)
+  )
+  &&
+  (
+    !devDependencyAdvisoryIds.includes(advisory.id)
+    || !ignoreDevDependecies
+  )
+}
+
+function parseAuditJson(jsonStringsArray) {
+  try {
+    return jsonStringsArray.filter(a => !isNullOrEmpty(a))
+      .map(a => JSON.parse(a))
+  } catch(ex) {
+    console.error(`ERROR: Unable to parse yarn audit output: ${ex}`)
+    console.error("Try running `yarn audit` for more info")
+
+    process.exit(1)
+  }
+}
+
+async function handleAuditNetworkError(output) {
+  let error = "ERROR: Network error occurred when querying audit registry"
+
+  if (!shouldRetryNetworkErrors) {
+    errorAndExit(`${error}\n\n${output}`)
+  }
+
+  console.error(`${error}, retrying...\n`)
+
+  await sleep(1000)
+  return await runYarnAudit()
+}
+
+async function invokeYarnAudit() {
+  let stdOutAndErr = []
+  let yarnProcess = child_process.spawn("yarn", ["audit", "--json"])
+
+  yarnProcess.stdout.on("data", d => stdOutAndErr.push(d))
+  yarnProcess.stderr.on("data", d => stdOutAndErr.push(d))
+
+  let exitCode = await new Promise((resolve, reject) =>
+    yarnProcess.on("exit", resolve)
+      .on("error", reject)
+  )
+
+  stdOutAndErr = flatMap(stdOutAndErr)
+
+  let output = Buffer.from(stdOutAndErr).toString()
+  let jsonStrings = output.replace(/\r?\n|\r/g, "\n").split("\n")
+
+  return {
+    exitCode,
+    output,
+    jsonStrings
+  }
+}
+
+async function runYarnAudit() {
+  console.log("Running yarn audit...\n")
+
+  let { exitCode, output, jsonStrings } = await invokeYarnAudit()
+  let networkErrorHasOccurred = false
+
+  if (Array.isArray(jsonStrings)) {
+    networkErrorHasOccurred = jsonStrings.find(a => a.includes("Error: Request failed "))
+  }
+
+  if (networkErrorHasOccurred) {
+    return await handleAuditNetworkError(output)
+  }
+
+  if (exitCode === 1) {
+    errorAndExit(`ERROR: Yarn audit error:\n${output}`)
+  }
+
+  return parseAuditJson(jsonStrings)
 }
 
 function getDevDependenciesRegex() {
-    let packageJsonExists = fs.existsSync("package.json")
+  if (!fs.existsSync("package.json")) {
+    console.log("WARNING: No package.json was found in the current working directory")
+    logDebug("Dev dependencies will not be ignored")
 
-    if (!packageJsonExists) {
-        console.log("WARNING: No package.json was found in the current working directory")
-        logDebug("Dev dependencies will not be ignored")
-        return
-    }
+    return
+  }
 
-    let packageJson = fs.readFileSync("package.json")
-    let package = JSON.parse(packageJson)
+  let packageJson = fs.readFileSync("package.json")
+  let package = JSON.parse(packageJson)
+  let devDependencies = []
 
-    if (
-        !(package instanceof Object)
-        || !(package.devDependencies instanceof Object)
-    ) {
-        return
-    }
+  if (typeof package === "object" && typeof package.devDependencies === "object") {
+    devDependencies = Object.keys(package.devDependencies)
+  }
 
-    let devDependencies = Object.keys(package.devDependencies)
+  if (devDependencies.length < 1) {
+    logDebug("No dev dependencies installed")
+    logDebug("Dev dependencies will not be ignored")
 
-    if (devDependencies.length < 1) {
-        logDebug("No dev dependencies installed")
-        return
-    }
+    return
+  }
 
-    let devDependenciesCsv = devDependencies.join(", ")
+  let devDependenciesCsv = devDependencies.join(", ")
 
-    logDebug(`Dev dependencies: ${devDependenciesCsv}`)
+  logDebug(`Dev dependencies: ${devDependenciesCsv}`)
 
-    ignoreDevDependecies
-        ? logDebug("Dev dependencies will be ignored")
-        : logDebug("Dev dependencies will not be ignored") 
+  ignoreDevDependecies
+    ? logDebug("Dev dependencies will be ignored")
+    : logDebug("Dev dependencies will not be ignored") 
 
-    let devDependenciesOr = devDependencies.map(d => `(${d})`).join("|")
+  let devDependenciesOr = devDependencies.map(d => `(${d})`).join("|")
+  let devDependenciesRegex = `^${devDependenciesOr}>*.*$`
 
-    return new RegExp(`^${devDependenciesOr}>.*$`)
+  logDebug(`Dev dependencies regex: ${devDependenciesRegex}`)
+
+  return new RegExp(devDependenciesRegex)
 }
 
 async function runAuditReport() {
-    let devDependenciesRegex = getDevDependenciesRegex()
-    let auditResults = await runYarnAudit()
-    let auditSummary = auditResults.pop()
+  let devDependenciesRegex = getDevDependenciesRegex()
+  let auditResults = await runYarnAudit()
+  let auditSummary = auditResults.pop()
 
-    logDebug(`Audit summary:\n${toJson(auditSummary)}\n`)
+  logDebug(`Audit summary:\n${toJson(auditSummary)}\n`)
 
-    let auditAdvisories = auditResults.filter(r => r.type === "auditAdvisory")
-        .map(r => r.data.advisory)
-    
-    let devDependencyAdvisories = []
-    
-    if (devDependenciesRegex) {
-        devDependencyAdvisories = auditAdvisories.filter(a =>
-            flatMap(a.findings, f => f.paths).every(d => d.match(devDependenciesRegex))
-        )
-    }
-
-    let devDependencyAdvisoryIds = devDependencyAdvisories.map(d => d.id)
-
-    let filteredAuditAdvisories = auditAdvisories.filter(a =>
-        (
-            !severityShouldBeIgnored(a.severity)
-            && !excludedAdvisories.includes(a.id)
-        )
-        &&
-        (
-            !devDependencyAdvisoryIds.includes(a.id)
-            || !ignoreDevDependecies
-        )
+  let auditAdvisories = auditResults.filter(r => r.type === "auditAdvisory")
+    .map(r => r.data.advisory)
+  
+  let devDependencyAdvisories = []
+  
+  if (devDependenciesRegex) {
+    devDependencyAdvisories = auditAdvisories.filter(a =>
+      flatMap(a.findings, f => f.paths).every(d => d.match(devDependenciesRegex))
     )
+  }
 
-    let excludedAuditAdvisories = auditAdvisories.filter(a =>
-        excludedAdvisories.includes(a.id) &&
-        !severityShouldBeIgnored(a.severity)
-    )
-    let severityIgnoredAuditAdvisories = auditAdvisories.map(a => a.severity)
-        .filter(severityShouldBeIgnored)
+  let devDependencyAdvisoryIds = devDependencyAdvisories.map(d => d.id)
 
-    logDebug(`Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
-    logDebug(`Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
-    logDebug(`Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
+  let filteredAuditAdvisories = auditAdvisories.filter(a => isNonExcludedAdvisory(a, devDependencyAdvisoryIds))
 
-    printAuditReport(
-        filteredAuditAdvisories,
-        devDependencyAdvisoryIds,
-        severityIgnoredAuditAdvisories,
-        excludedAuditAdvisories
-    )
+  let excludedAuditAdvisories = auditAdvisories.filter(a =>
+    excludedAdvisories.includes(a.id) &&
+    !severityShouldBeIgnored(a.severity)
+  )
+  let severityIgnoredAuditAdvisories = auditAdvisories.map(a => a.severity)
+    .filter(severityShouldBeIgnored)
 
-    return filteredAuditAdvisories.length 
+  printAuditReport(
+    filteredAuditAdvisories,
+    devDependencyAdvisories,
+    devDependencyAdvisoryIds,
+    severityIgnoredAuditAdvisories,
+    excludedAuditAdvisories
+  )
+
+  return filteredAuditAdvisories.length 
 }
 
 function toJson(value) {
-    return JSON.stringify(value, null, 2)
+  return JSON.stringify(value, null, 2)
 }
 
 function printUsageAndExit() {
-    errorAndExit(`
-auditable [OPTIONS]
+  errorAndExit(`
+improved-yarn-audit [OPTIONS]
 
 Options:
 
-    --min-severity, -s                Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
-    --exclude, -e                     CSV list of advisory ID's to ignore, e.x. 432,564
-    --retry-on-network-failure, -r    Retry audit if NPM registry throws a network error
-    --ignore-dev-deps, -i             Ignore advisories for dev dependencies
-    --debug, -d                       Print out raw audit report's and advisory details
-    --help, -h                        Show this information
+  --min-severity, -s                Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
+  --exclude, -e                     CSV list of advisory ID's to ignore, e.x. 432,564 (this overrides .iyarc)
+  --retry-on-network-failure, -r    Retry audit if NPM registry throws a network error
+  --ignore-dev-deps, -i             Ignore advisories for dev dependencies
+  --debug, -d                       Print out raw audit report's and advisory details
+  --help, -h                        Show this information
+  
+The CSV list of advisory ID's can also be provided in a '.iyarc' file in the current working directory. This file also supports
+comments, lines beginning with a '#' character are ignored.
 `)
 }
 
 function errorAndExit(msg) {
-    console.error(msg)
-    process.exit(1)
+  console.error(msg)
+  process.exit(1)
 }
 
 function isNumbersCsv(str) {
-    return str.trim()
-        .replace(/\s/g, "") // filter out spaces
-        .match(/^(,|\d)*\d$/) // number csv regex (without spaces)
+  return str.trim()
+    .replace(/\s/g, "")    // filter out spaces
+    .match(/^(,|\d)*\d$/)  // number csv regex (without spaces)
 }
 
 function isNullOrEmpty(str) {
-    return !str || str.trim() === ""
+  return typeof str !== "string" || str.trim() === ""
+}
+
+function loadExclusionsFromFileIfPresent() {
+  if (!fs.existsSync(exclusionsFileName)) {
+    logDebug(`No ${exclusionsFileName} found in working directory`)
+    return
+  }
+
+  if (excludedAdvisories.length > 0) {
+    console.log(`WARNING: Ignoring ${exclusionsFileName} as exclusions were passed in via command line`)
+    return
+  }
+
+  let advisoriesCsv = fs.readFileSync(exclusionsFileName)
+    .toString()
+    .replace(/^\s*#.*$/mg, "") // ignore comment lines, if present
+
+  logDebug(`.iyarc contents (excluding comments): ${advisoriesCsv}`)
+
+  if (!isNumbersCsv(advisoriesCsv)) {
+    errorAndExit(`ERROR: ${exclusionsFileName} is not in the correct format, excluded advisories must be provided as ` +
+      "a CSV list, for example: '2341,21,43'")
+  }
+
+  console.log(`Reading excluded advisories from ${exclusionsFileName}`)
+
+  excludedAdvisories = JSON.parse(`[${advisoriesCsv}]`)
 }
 
 function isFlag(flags, ...strs) {
-    return strs.filter(s =>
-        !isNullOrEmpty(s) && flags.includes(s.trim().toLowerCase())
-    ).length > 0
+  return strs.filter(s =>
+    !isNullOrEmpty(s) && flags.includes(s.trim().toLowerCase())
+  ).length > 0
 }
 
 function parseCommandLineArgs() {
-    process.argv.reduce((a, b) => {
-        if (isFlag(optionFlags.exclude, a) && !isNullOrEmpty(b)) {
-            if (isNumbersCsv(b)) {
-                excludedAdvisories = JSON.parse(`[${b}]`)
-            } else {
-                errorAndExit(`ERROR: Unable to parse --exclude option value: ${b}`)
-            }
-        } else if (isFlag(optionFlags.severity, a) && !isNullOrEmpty(b)) {
-            if (![null, undefined].includes(severityToIntMap[b.toLowerCase()])) {
-                minSeverityName = b.trim().toLowerCase()
-                minSeverity = severityToIntMap[minSeverityName]
-            } else {
-                errorAndExit(`ERROR: Unrecognised --min-severity option value: ${b.trim()}`)
-            }
-        } else if (isFlag(optionFlags.debug, a, b)) {
-            debugEnabled = true
-        } else if (isFlag(optionFlags.help, a, b)) {
-            printUsageAndExit()
-        } else if (isFlag(optionFlags.retryNetworkIssues, a, b)) {
-            shouldRetryNetworkErrors = true
-        } else if (isFlag(optionFlags.ignoreDevDependecies, a, b)) {
-            ignoreDevDependecies = true
-        }
+  process.argv.reduce((a, b) => {
+    if (isFlag(optionFlags.help, a, b)) {
+      printUsageAndExit()
+    }
 
-        return b
-    }, "")
+    if (isFlag(optionFlags.exclude, a) && !isNullOrEmpty(b)) {
+      if (isNumbersCsv(b)) {
+        excludedAdvisories = JSON.parse(`[${b}]`)
+      } else {
+        errorAndExit(`ERROR: Unable to parse --exclude option value: ${b}`)
+      }
+    }
+
+    if (isFlag(optionFlags.severity, a) && !isNullOrEmpty(b)) {
+      if (![null, undefined].includes(severityToIntMap[b.toLowerCase()])) {
+        minSeverityName = b.trim().toLowerCase()
+        minSeverity = severityToIntMap[minSeverityName]
+      } else {
+        errorAndExit(`ERROR: Unrecognised --min-severity option value: ${b.trim()}`)
+      }
+    }
+
+    if (isFlag(optionFlags.debug, a, b)) {
+      debugEnabled = true
+    }
+
+    if (isFlag(optionFlags.retryNetworkIssues, a, b)) {  
+      shouldRetryNetworkErrors = true
+    } 
+  
+    if (isFlag(optionFlags.ignoreDevDependecies, a, b)) {
+      ignoreDevDependecies = true
+    }
+
+    return b
+  }, "")
 }
 
 async function main() {
-    parseCommandLineArgs()
+  parseCommandLineArgs()
 
-    console.log(`Minimum severity level to report: ${minSeverityName}`)
+  logDebug(`shouldRetryNetworkErrors = ${shouldRetryNetworkErrors}`)
+  logDebug(`ignoreDevDependecies = ${ignoreDevDependecies}`)
 
-    console.log(
-        excludedAdvisories.length > 0 ?
-            `Excluded Advisories: ${JSON.stringify(excludedAdvisories)}\n` :
-            ""
-    )
+  loadExclusionsFromFileIfPresent()
 
-    let advisoryCount = await runAuditReport()
+  console.log(`Minimum severity level to report: ${minSeverityName}`)
 
-    process.exit(advisoryCount)
+  console.log(
+    excludedAdvisories.length > 0 ?
+      `Excluded Advisories: ${JSON.stringify(excludedAdvisories)}\n` :
+      ""
+  )
+
+  let advisoryCount = await runAuditReport()
+
+  process.exit(advisoryCount)
 }
 
 main()
