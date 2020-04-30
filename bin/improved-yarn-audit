@@ -147,7 +147,14 @@ async function handleAuditNetworkError(output) {
 
 async function invokeYarnAudit() {
   let stdOutAndErr = []
-  let yarnProcess = child_process.spawn("yarn", ["audit", "--json"])
+  
+  let auditParams = ["audit", "--json", `--level=${minSeverityName}`];
+  
+  if(ignoreDevDependecies) {
+    auditParams.push("--groups=dependencies")
+  }
+  
+  let yarnProcess = child_process.spawn("yarn", auditParams)
 
   yarnProcess.stdout.on("data", d => stdOutAndErr.push(d))
   yarnProcess.stderr.on("data", d => stdOutAndErr.push(d))
