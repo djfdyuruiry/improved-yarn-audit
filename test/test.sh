@@ -31,7 +31,11 @@ runTests() {
   excludedAdvisories="3,8,28,29,535,880,1469"
 
   cd "${scriptPath}"
+
+  rm -f package.json
   rm -f .iyarc
+
+  cp vunerable-package.json package.json
 
   #test 1
   callIya
@@ -54,13 +58,15 @@ runTests() {
   echo "${excludedAdvisories}" >> .iyarc
 
   callIya
-  testExitCode "they are excluded in .iyarc and comments are present" "0" "$?"
+  testExitCode "they are excluded in .iyarc file with comments" "0" "$?"
 
   #test 5
   echo "${excludedAdvisories}" > .iyarc
 
   callIya -e 1469
   testExitCode "vulnerabilities are present and they are excluded in .iyarc but exclusions are in the command line" "6" "$?"
+
+  rm -f .iyarc
 
   #test 6
   callIya -i

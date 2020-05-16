@@ -14,5 +14,4 @@ jobs:
       - uses: dcodeIO/setup-node-nvm@v2.0.0
         with:
           node-version: v10
-      - run: npm install
       - run: npm test
