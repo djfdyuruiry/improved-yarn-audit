@@ -33,9 +33,11 @@ runTests() {
   cd "${scriptPath}"
 
   rm -f package.json
+  rm -f yarn.lock
   rm -f .iyarc
 
   cp vunerable-package.json package.json
+  cp vunerable-yarn.lock yarn.lock
 
   #test 1
   callIya
@@ -97,11 +99,27 @@ runTests() {
   echo "28,29,1469" > .iyarc
   callIya -s high 
   testExitCode "they are excluded in .iyarc and min severity is high" "0" "$?"
+
+  rm -f .iyarc
+
+  #test 13  
+  rm -f package.json
+  rm -f yarn.lock
+
+  cp huge-package.json package.json
+  cp huge-yarn.lock yarn.lock
+
+  callIya -s high -e 1486 
+  testExitCode "the package JSON results in huge JSON audit output (~1.5GB)" "0" "$?"
 }
 
 runTests
 
 if [ "${testFailed}" == true ]; then
+  echo "Test Result: FAILURE"
   echo "There were test failures"
+
   exit 1
+else
+  echo "Test Result: PASS"
 fi

@@ -1,6 +1,21 @@
 #! /usr/bin/env node
-const child_process = require("child_process")
-const fs = require("fs")
+const { spawn } = require("child_process")
+const { randomBytes } = require("crypto")
+const {
+  existsSync,
+  createReadStream,
+  createWriteStream,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmdirSync,
+  unlinkSync
+} = require("fs")
+const { tmpdir } = require("os")
+const path = require("path")
+const { createInterface } = require("readline")
+
+const joinPath = path.join
 
 const optionFlags = {
   debug: ["--debug", "-d"],
@@ -27,6 +42,7 @@ let excludedAdvisories = []
 let ignoreDevDependecies = false
 let debugEnabled = false
 let shouldRetryNetworkErrors = false
+let auditResultsFilePath = "/dev/null"
 
 function severityShouldBeIgnored(severity) {
   return severityToIntMap[severity] < minSeverity
@@ -120,10 +136,9 @@ function isNonExcludedAdvisory(advisory, devDependencyAdvisoryIds) {
   )
 }
 
-function parseAuditJson(jsonStringsArray) {
+function parseAuditJson(jsonString) {
   try {
-    return jsonStringsArray.filter(a => !isNullOrEmpty(a))
-      .map(a => JSON.parse(a))
+    return JSON.parse(jsonString)
   } catch(ex) {
     console.error(`ERROR: Unable to parse yarn audit output: ${ex}`)
     console.error("Try running `yarn audit` for more info")
@@ -132,8 +147,18 @@ function parseAuditJson(jsonStringsArray) {
   }
 }
 
+async function getAuditSummary() {
+  logDebug("Getting yarn audit summary")
+
+  let auditSummary = ""
+
+  await iterateOverAuditResults(l => auditSummary = l)
+
+  return auditSummary
+}
+
 async function handleAuditNetworkError(output) {
-  let error = "ERROR: Network error occurred when querying audit registry"
+  const error = "ERROR: Network error occurred when querying audit registry"
 
   if (!shouldRetryNetworkErrors) {
     errorAndExit(`${error}\n\n${output}`)
@@ -142,70 +167,102 @@ async function handleAuditNetworkError(output) {
   console.error(`${error}, retrying...\n`)
 
   await sleep(1000)
+
   return await runYarnAudit()
 }
 
+async function dumpAuditResultsAsString() {
+  let output = ""
+
+  await iterateOverAuditResults(l => output += l)
+
+  return output
+}
+
+async function iterateOverAuditResults(action) {
+  logDebug("Iterating over audit results")
+
+  const auditResultsFileStream = getAuditResultsFileStream("r")
+  const iterator = createInterface(auditResultsFileStream)
+
+  iterator.on("line", action)
+
+  await new Promise(resolve => iterator.on("close", resolve))
+}
+
+function getAuditResultsFileStream(mode) {
+  logDebug(`Opening file stream for file '${auditResultsFilePath}' in '${mode}' mode`)
+
+  if (mode === "w") {
+    return createWriteStream(auditResultsFilePath)
+  }
+
+  return createReadStream(auditResultsFilePath)
+}
+
+function cleanupAuditResultsFile() {
+  if (existsSync(auditResultsFilePath)) {
+    unlinkSync(auditResultsFilePath)
+  }
+}
+
 async function invokeYarnAudit() {
-  let stdOutAndErr = []
-  
-  let auditParams = ["audit", "--json", `--level=${minSeverityName}`];
-  
+  const auditParams = ["audit", "--json", `--level=${minSeverityName}`];
+
   if(ignoreDevDependecies) {
     auditParams.push("--groups=dependencies")
   }
-  
-  let yarnProcess = child_process.spawn("yarn", auditParams)
 
-  yarnProcess.stdout.on("data", d => stdOutAndErr.push(d))
-  yarnProcess.stderr.on("data", d => stdOutAndErr.push(d))
+  cleanupAuditResultsFile()
+
+  const auditResultsFileStream = getAuditResultsFileStream("w")
+  const yarnProcess = spawn("yarn", auditParams)
+
+  yarnProcess.stdout.pipe(auditResultsFileStream)
+  yarnProcess.stderr.pipe(auditResultsFileStream)
 
   let exitCode = await new Promise((resolve, reject) =>
     yarnProcess.on("exit", resolve)
       .on("error", reject)
   )
 
-  stdOutAndErr = flatMap(stdOutAndErr)
+  auditResultsFileStream.close()
 
-  let output = Buffer.from(stdOutAndErr).toString()
-  let jsonStrings = output.replace(/\r?\n|\r/g, "\n").split("\n")
-
-  return {
-    exitCode,
-    output,
-    jsonStrings
-  }
+  return exitCode
 }
 
 async function runYarnAudit() {
   console.log("Running yarn audit...\n")
 
-  let { exitCode, output, jsonStrings } = await invokeYarnAudit()
+  let exitCode = await invokeYarnAudit()
   let networkErrorHasOccurred = false
 
-  if (Array.isArray(jsonStrings)) {
-    networkErrorHasOccurred = jsonStrings.find(a => a.includes("Error: Request failed "))
+  if (existsSync(auditResultsFilePath)) {    
+    await iterateOverAuditResults(a => 
+      networkErrorHasOccurred = a.includes("Error: Request failed ")
+    )
   }
 
+  logDebug(`networkErrorHasOccurred: ${networkErrorHasOccurred}`)
+
   if (networkErrorHasOccurred) {
-    return await handleAuditNetworkError(output)
+    return await handleAuditNetworkError()
   }
 
   if (exitCode === 1) {
-    errorAndExit(`ERROR: Yarn audit error:\n${output}`)
+    errorAndExit(`ERROR: Yarn audit error:\n${await dumpAuditResultsAsString()}`)
   }
-
-  return parseAuditJson(jsonStrings)
 }
 
 function getDevDependenciesRegex() {
-  if (!fs.existsSync("package.json")) {
+  if (!existsSync("package.json")) {
     console.log("WARNING: No package.json was found in the current working directory")
     logDebug("Dev dependencies will not be ignored")
 
     return
   }
 
-  let packageJson = fs.readFileSync("package.json")
+  let packageJson = readFileSync("package.json")
   let package = JSON.parse(packageJson)
   let devDependencies = []
 
@@ -238,32 +295,58 @@ function getDevDependenciesRegex() {
 
 async function runAuditReport() {
   let devDependenciesRegex = getDevDependenciesRegex()
-  let auditResults = await runYarnAudit()
-  let auditSummary = auditResults.pop()
 
-  logDebug(`Audit summary:\n${toJson(auditSummary)}\n`)
+  await runYarnAudit()
 
-  let auditAdvisories = auditResults.filter(r => r.type === "auditAdvisory")
-    .map(r => r.data.advisory)
-  
-  let devDependencyAdvisories = []
-  
-  if (devDependenciesRegex) {
-    devDependencyAdvisories = auditAdvisories.filter(a =>
-      flatMap(a.findings, f => f.paths).every(d => d.match(devDependenciesRegex))
-    )
+  if (debugEnabled) {
+    logDebug(`Audit summary:\n${await getAuditSummary()}\n`)
   }
 
-  let devDependencyAdvisoryIds = devDependencyAdvisories.map(d => d.id)
+  let filteredAuditAdvisories = []
+  let devDependencyAdvisories = []
+  let devDependencyAdvisoryIds = []
+  let severityIgnoredAuditAdvisories = []
+  let excludedAuditAdvisories = []
 
-  let filteredAuditAdvisories = auditAdvisories.filter(a => isNonExcludedAdvisory(a, devDependencyAdvisoryIds))
+  await iterateOverAuditResults(resultJson => {
+    const potentialResult = parseAuditJson(resultJson)
+  
+    if (
+      typeof potentialResult.type !== "string"
+      || potentialResult.type !== "auditAdvisory"
+    ) {
+      return
+    }
 
-  let excludedAuditAdvisories = auditAdvisories.filter(a =>
-    excludedAdvisories.includes(a.id) &&
-    !severityShouldBeIgnored(a.severity)
-  )
-  let severityIgnoredAuditAdvisories = auditAdvisories.map(a => a.severity)
-    .filter(severityShouldBeIgnored)
+    const result = potentialResult.data.advisory
+
+    if (devDependenciesRegex) {
+      const isDevDependencyAdvisory = flatMap(result.findings, f => f.paths)
+        .every(d => d.match(devDependenciesRegex))
+
+      if (isDevDependencyAdvisory) {
+        devDependencyAdvisories = devDependencyAdvisories.concat(result)
+        devDependencyAdvisoryIds = devDependencyAdvisories.concat(
+          devDependencyAdvisories.map(d => d.id)
+        )
+      }
+    }
+
+    if (isNonExcludedAdvisory(result, devDependencyAdvisoryIds)) {
+      filteredAuditAdvisories.push(result)
+    }
+
+    if (
+      excludedAdvisories.includes(result.id) 
+      && !severityShouldBeIgnored(result.severity)
+    ) {
+      excludedAuditAdvisories.push(result)
+    }
+
+    if (severityShouldBeIgnored(result.severity)) {
+      severityIgnoredAuditAdvisories.push(result)
+    }
+  })
 
   printAuditReport(
     filteredAuditAdvisories,
@@ -274,6 +357,31 @@ async function runAuditReport() {
   )
 
   return filteredAuditAdvisories.length 
+}
+
+async function withTempDir(action, cleanupAction) {
+  const prefix = joinPath(tmpdir(), "iya")
+  const tempDirPath = mkdtempSync(prefix)
+
+  try {
+		return await action(tempDirPath)
+	} finally {
+    cleanupAction()
+
+		rmdirSync(
+      tempDirPath,
+      { recursive: true }
+    )
+	}
+}
+
+function withTempFile(action, cleanupAction) {
+  return withTempDir(tempDirPath => {
+    const randomName = randomBytes(16).toString("hex")
+    const tmpFilePath = joinPath(tempDirPath, randomName)
+
+    return action(tmpFilePath)
+  }, cleanupAction)
 }
 
 function toJson(value) {
@@ -314,7 +422,7 @@ function isNullOrEmpty(str) {
 }
 
 function loadExclusionsFromFileIfPresent() {
-  if (!fs.existsSync(exclusionsFileName)) {
+  if (!existsSync(exclusionsFileName)) {
     logDebug(`No ${exclusionsFileName} found in working directory`)
     return
   }
@@ -324,7 +432,7 @@ function loadExclusionsFromFileIfPresent() {
     return
   }
 
-  let advisoriesCsv = fs.readFileSync(exclusionsFileName)
+  let advisoriesCsv = readFileSync(exclusionsFileName)
     .toString()
     .replace(/^\s*#.*$/mg, "") // ignore comment lines, if present
 
@@ -386,6 +494,9 @@ function parseCommandLineArgs() {
 }
 
 async function main() {
+  console.log("Improved Yarn Audit - v2.1.0")
+  console.log()
+
   parseCommandLineArgs()
 
   logDebug(`shouldRetryNetworkErrors = ${shouldRetryNetworkErrors}`)
@@ -401,7 +512,13 @@ async function main() {
       ""
   )
 
-  let advisoryCount = await runAuditReport()
+  let advisoryCount = await withTempFile(filePath => {
+    auditResultsFilePath = filePath
+
+    logDebug(`Temporary file path: ${auditResultsFilePath}`)
+
+    return runAuditReport()
+  }, cleanupAuditResultsFile)
 
   process.exit(advisoryCount)
 }

@@ -3,3 +3,4 @@ node_modules
 .iyarc
 
 test/package.json
+test/yarn.lock
