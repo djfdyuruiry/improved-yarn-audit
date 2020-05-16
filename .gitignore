@@ -1,3 +1,6 @@
 node_modules
 *.log
 .iyarc
+
+test/package.json
+test/yarn.lock
