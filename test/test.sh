@@ -110,7 +110,7 @@ runTests() {
   cp huge-yarn.lock yarn.lock
 
   callIya -s high -e 1486 
-  testExitCode "the package JSON results in huge JSON audit output (~1.5GB)" "0" "$?"
+  testExitCode "the package JSON results in huge JSON audit output (~1.5GB) then output is processed" "0" "$?"
 }
 
 runTests

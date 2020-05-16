@@ -105,7 +105,7 @@ function printAuditReport(
   logDebug(`Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
   logDebug(`Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
 
-  let filteredAdvisoryReport = buildAdvisoryReport(
+  const filteredAdvisoryReport = buildAdvisoryReport(
     devDependencyAdvisoryIds,
     severityIgnoredAuditAdvisories,
     excludedAuditAdvisories
@@ -234,7 +234,8 @@ async function invokeYarnAudit() {
 async function runYarnAudit() {
   console.log("Running yarn audit...\n")
 
-  let exitCode = await invokeYarnAudit()
+  const exitCode = await invokeYarnAudit()
+
   let networkErrorHasOccurred = false
 
   if (existsSync(auditResultsFilePath)) {    
@@ -262,8 +263,9 @@ function getDevDependenciesRegex() {
     return
   }
 
-  let packageJson = readFileSync("package.json")
-  let package = JSON.parse(packageJson)
+  const packageJson = readFileSync("package.json")
+  const package = JSON.parse(packageJson)
+
   let devDependencies = []
 
   if (typeof package === "object" && typeof package.devDependencies === "object") {
@@ -277,7 +279,7 @@ function getDevDependenciesRegex() {
     return
   }
 
-  let devDependenciesCsv = devDependencies.join(", ")
+  const devDependenciesCsv = devDependencies.join(", ")
 
   logDebug(`Dev dependencies: ${devDependenciesCsv}`)
 
@@ -285,8 +287,8 @@ function getDevDependenciesRegex() {
     ? logDebug("Dev dependencies will be ignored")
     : logDebug("Dev dependencies will not be ignored") 
 
-  let devDependenciesOr = devDependencies.map(d => `(${d})`).join("|")
-  let devDependenciesRegex = `^${devDependenciesOr}>*.*$`
+  const devDependenciesOr = devDependencies.map(d => `(${d})`).join("|")
+  const devDependenciesRegex = `^${devDependenciesOr}>*.*$`
 
   logDebug(`Dev dependencies regex: ${devDependenciesRegex}`)
 
@@ -294,7 +296,7 @@ function getDevDependenciesRegex() {
 }
 
 async function runAuditReport() {
-  let devDependenciesRegex = getDevDependenciesRegex()
+  const devDependenciesRegex = getDevDependenciesRegex()
 
   await runYarnAudit()
 
@@ -302,11 +304,12 @@ async function runAuditReport() {
     logDebug(`Audit summary:\n${await getAuditSummary()}\n`)
   }
 
-  let filteredAuditAdvisories = []
+  const filteredAuditAdvisories = []
+  const severityIgnoredAuditAdvisories = []
+  const excludedAuditAdvisories = []
+
   let devDependencyAdvisories = []
   let devDependencyAdvisoryIds = []
-  let severityIgnoredAuditAdvisories = []
-  let excludedAuditAdvisories = []
 
   await iterateOverAuditResults(resultJson => {
     const potentialResult = parseAuditJson(resultJson)
