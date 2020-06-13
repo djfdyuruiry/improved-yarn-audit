@@ -17,13 +17,16 @@ const { createInterface } = require("readline")
 
 const joinPath = path.join
 
+const packageInfo = require(joinPath(__dirname, "..", "package.json"));
+
 const optionFlags = {
   severity: ["--min-severity", "-s"],
   exclude: ["--exclude", "-e"],
   retryNetworkIssues: ["--retry-on-network-failure", "-r"],
-  ignoreDevDependecies: ["--ignore-dev-deps", "-i"],
+  ignoreDevDependencies: ["--ignore-dev-deps", "-i"],
   failOnMissingExclusions: ["--fail-on-missing-exclusions", "-f"],
   debug: ["--debug", "-d"],
+  version: ["--version", "-v"],
   help: ["--help", "-h"]
 }
 
@@ -42,7 +45,7 @@ const exclusionsFileName = ".iyarc"
 let minSeverityName = "low"
 let minSeverity = severityToIntMap[minSeverityName]
 let excludedAdvisories = []
-let ignoreDevDependecies = false
+let ignoreDevDependencies = false
 let failOnMissingAdvisoryExclusions = false
 let debugEnabled = false
 let shouldRetryNetworkErrors = false
@@ -101,7 +104,7 @@ function buildAdvisoryReport(
 ) {
   let filteredAdvisoryReport = ""
 
-  if (ignoreDevDependecies && devDependencyAdvisoryIds.length > 0) {
+  if (ignoreDevDependencies && devDependencyAdvisoryIds.length > 0) {
     filteredAdvisoryReport +=
       `\n${devDependencyAdvisoryIds.length} ignored because ` +
       `they are dev dependencies\n`
@@ -163,7 +166,7 @@ function isNonExcludedAdvisory(advisory, devDependencyAdvisoryIds) {
   &&
   (
     !devDependencyAdvisoryIds.includes(advisory.id)
-    || !ignoreDevDependecies
+    || !ignoreDevDependencies
   )
 }
 
@@ -240,7 +243,7 @@ function cleanupAuditResultsFile() {
 async function invokeYarnAudit() {
   const auditParams = ["audit", "--json", `--level=${minSeverityName}`];
 
-  if(ignoreDevDependecies) {
+  if(ignoreDevDependencies) {
     auditParams.push("--groups=dependencies")
   }
 
@@ -320,7 +323,7 @@ function getDevDependenciesRegex() {
 
   logDebug(`Dev dependencies: ${devDependenciesCsv}`)
 
-  ignoreDevDependecies
+  ignoreDevDependencies
     ? logDebug("Dev dependencies will be ignored")
     : logDebug("Dev dependencies will not be ignored") 
 
@@ -433,6 +436,10 @@ function toJson(value) {
   return JSON.stringify(value, null, 2)
 }
 
+function printVersionAndExit() {
+  errorAndExit(packageInfo.version)
+}
+
 function printUsageAndExit() {
   errorAndExit(`
 improved-yarn-audit [OPTIONS]
@@ -445,8 +452,9 @@ Options:
   --ignore-dev-deps, -i               Ignore advisories for dev dependencies
   --fail-on-missing-exclusions, -f    Return a non-zero exit code when advisory exclusions are no longer detected by yarn audit
   --debug, -d                         Print out raw audit report's and advisory details
+  --version, -v                       Print version info and exit
   --help, -h                          Show this information
-  
+
 The CSV list of advisory ID's can also be provided in a '.iyarc' file in the current working directory. This file also supports
 comments, lines beginning with a '#' character are ignored.
 `)
@@ -494,14 +502,18 @@ function loadExclusionsFromFileIfPresent() {
   excludedAdvisories = JSON.parse(`[${advisoriesCsv}]`)
 }
 
-function isFlag(flags, ...strs) {
-  return strs.filter(s =>
+function isFlag(flags, ...strings) {
+  return strings.filter(s =>
     !isNullOrEmpty(s) && flags.includes(s.trim().toLowerCase())
   ).length > 0
 }
 
 function parseCommandLineArgs() {
   process.argv.reduce((a, b) => {
+    if (isFlag(optionFlags.version, a, b)) {
+      printVersionAndExit()
+    }
+
     if (isFlag(optionFlags.help, a, b)) {
       printUsageAndExit()
     }
@@ -531,8 +543,8 @@ function parseCommandLineArgs() {
       shouldRetryNetworkErrors = true
     } 
   
-    if (isFlag(optionFlags.ignoreDevDependecies, a, b)) {
-      ignoreDevDependecies = true
+    if (isFlag(optionFlags.ignoreDevDependencies, a, b)) {
+      ignoreDevDependencies = true
     }
   
     if (isFlag(optionFlags.failOnMissingExclusions, a, b)) {
@@ -544,13 +556,13 @@ function parseCommandLineArgs() {
 }
 
 async function main() {
-  console.log("Improved Yarn Audit - v2.2.0")
-  console.log()
-
   parseCommandLineArgs()
 
+  console.log(`Improved Yarn Audit - v${packageInfo.version}`)
+  console.log()
+
   logDebug(`shouldRetryNetworkErrors = ${shouldRetryNetworkErrors}`)
-  logDebug(`ignoreDevDependecies = ${ignoreDevDependecies}`)
+  logDebug(`ignoreDevDependencies = ${ignoreDevDependencies}`)
 
   loadExclusionsFromFileIfPresent()
 
