@@ -35,6 +35,8 @@ const severityToIntMap = {
   critical: 4
 }
 
+const maxSeverityNameLength = 8
+
 const exclusionsFileName = ".iyarc"
 
 let minSeverityName = "low"
@@ -138,7 +140,11 @@ function printAuditReport(
 
   console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`)
 
-  filteredAuditAdvisories.forEach(a => console.log(`Vulnerability Found: ${a.severity.toUpperCase()} - ${a.url}`))
+  filteredAuditAdvisories.forEach(a => {
+    const formattedSeverity = a.severity.toUpperCase().padEnd(maxSeverityNameLength, " ")
+
+    console.log(`Vulnerability Found: ${formattedSeverity} - ${a.url}`)
+  })
 
   if (filteredAuditAdvisories.length > 0) {
     console.log()
