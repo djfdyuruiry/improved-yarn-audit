@@ -68,6 +68,18 @@ Example `.iyarc` file:
 
 **Note: if you pass in exclusions using the command line, these will override the `.iyarc` file**
 
+## Maintaining Advisory Exclusions
+
+Over time as you bump package versions, exclusions may become redundant as those advisories are no longer present in your dependencies.
+
+If you want to fail the audit check when exclusions are missing from the Yarn audit output use the `--fail-on-missing-exclusions` flag.
+
+```
+yarn run improved-yarn-audit --fail-on-missing-exclusions
+```
+
+The exit code will be  the total number of missing exclusions detected.
+
 ## Ignore All Dev Advisories
 
 If you want to ignore any advisories from dev dependencies, you can use the `--ignore-dev-deps` flag to do this.
