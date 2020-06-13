@@ -68,8 +68,6 @@ runTests() {
   callIya -e 1469
   testExitCode "vulnerabilities are present and they are excluded in .iyarc but exclusions are in the command line" "6" "$?"
 
-  rm -f .iyarc
-
   #test 6
   callIya -i
   testExitCode "dev dependencies flag is present then dev vulnerabilities are ignored" "6" "$?"
@@ -100,8 +98,6 @@ runTests() {
   callIya -s high 
   testExitCode "they are excluded in .iyarc and min severity is high" "0" "$?"
 
-  rm -f .iyarc
-
   #test 13  
   rm -f package.json
   rm -f yarn.lock
@@ -109,8 +105,35 @@ runTests() {
   cp huge-package.json package.json
   cp huge-yarn.lock yarn.lock
 
-  callIya -s high -e 1486 
-  testExitCode "the package JSON results in huge JSON audit output (~1.5GB)" "0" "$?"
+  callIya -s high -e 1486
+  testExitCode "the package JSON has a large number of dependencies" "0" "$?"
+
+  rm -f package.json
+  rm -f yarn.lock
+
+  cp vunerable-package.json package.json
+  cp vunerable-yarn.lock yarn.lock
+
+  #test 14
+  callIya -e "${excludedAdvisories},9999,1234"
+  testExitCode "some of the exclusions passed via cli are missing" "0" "$?"
+
+  #test 15
+  echo "${excludedAdvisories},9999" > .iyarc
+
+  callIya
+  testExitCode "some of the exclusions passed via .iyarc are missing" "0" "$?"
+
+  #test 16
+
+  callIya -e "${excludedAdvisories},1234,9999" -f
+  testExitCode "some of the exclusions passed via cli are missing and --fail-on-missing-exclusions is passed" "2" "$?"
+
+  #test 17
+  echo "${excludedAdvisories},1234" > .iyarc
+
+  callIya -f
+  testExitCode "some of the exclusions passed via .iyarc are missing and --fail-on-missing-exclusions is passed" "1" "$?"
 }
 
 runTests

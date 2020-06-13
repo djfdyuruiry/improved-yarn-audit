@@ -7,8 +7,8 @@ const {
   createWriteStream,
   mkdtempSync,
   readFileSync,
-  realpathSync,
   rmdirSync,
+  statSync,
   unlinkSync
 } = require("fs")
 const { tmpdir } = require("os")
@@ -18,12 +18,13 @@ const { createInterface } = require("readline")
 const joinPath = path.join
 
 const optionFlags = {
-  debug: ["--debug", "-d"],
-  exclude: ["--exclude", "-e"],
-  help: ["--help", "-h"],
-  retryNetworkIssues: ["--retry-on-network-failure", "-r"],
   severity: ["--min-severity", "-s"],
-  ignoreDevDependecies: ["--ignore-dev-deps", "-i"]
+  exclude: ["--exclude", "-e"],
+  retryNetworkIssues: ["--retry-on-network-failure", "-r"],
+  ignoreDevDependecies: ["--ignore-dev-deps", "-i"],
+  failOnMissingExclusions: ["--fail-on-missing-exclusions", "-f"],
+  debug: ["--debug", "-d"],
+  help: ["--help", "-h"]
 }
 
 const severityToIntMap = {
@@ -40,6 +41,7 @@ let minSeverityName = "low"
 let minSeverity = severityToIntMap[minSeverityName]
 let excludedAdvisories = []
 let ignoreDevDependecies = false
+let failOnMissingAdvisoryExclusions = false
 let debugEnabled = false
 let shouldRetryNetworkErrors = false
 let auditResultsFilePath = "/dev/null"
@@ -64,6 +66,29 @@ function flatMap (arr, callback) {
 function logDebug(str) {
   if (debugEnabled) {
     console.log(`DEBUG: ${str}`)
+  }
+}
+
+function checkForMissingExclusions(allAdvisories) {
+  const missingExcludedAdvisories = excludedAdvisories.filter(ea =>
+    allAdvisories.find(a => a.id === ea) === undefined
+  )
+
+  if (missingExcludedAdvisories.length < 1) {
+    logDebug("No missing advisory exclusions found")
+
+    return
+  }
+
+  console.log()
+
+  console.log("WARNING: One or more excluded audit advisories were missing from yarn audit output: "
+    +`${missingExcludedAdvisories.join(",")}`)
+
+  if (failOnMissingAdvisoryExclusions) {
+    console.error(`ERROR: ${optionFlags.failOnMissingExclusions.join("/")} was specified, `
+      + "exit code will indicate number of missing exclusions")
+    process.exit(missingExcludedAdvisories.length)
   }
 }
 
@@ -228,6 +253,12 @@ async function invokeYarnAudit() {
 
   auditResultsFileStream.close()
 
+  if (debugEnabled) {
+    const outputStats = statSync(auditResultsFilePath)
+
+    logDebug(`Yarn audit output size: ${outputStats.size} bytes`)
+  }
+
   return exitCode
 }
 
@@ -304,6 +335,7 @@ async function runAuditReport() {
     logDebug(`Audit summary:\n${await getAuditSummary()}\n`)
   }
 
+  const allAdvisories = [];
   const filteredAuditAdvisories = []
   const severityIgnoredAuditAdvisories = []
   const excludedAuditAdvisories = []
@@ -322,6 +354,8 @@ async function runAuditReport() {
     }
 
     const result = potentialResult.data.advisory
+
+    allAdvisories.push(result)
 
     if (devDependenciesRegex) {
       const isDevDependencyAdvisory = flatMap(result.findings, f => f.paths)
@@ -358,6 +392,8 @@ async function runAuditReport() {
     severityIgnoredAuditAdvisories,
     excludedAuditAdvisories
   )
+
+  checkForMissingExclusions(allAdvisories)
 
   return filteredAuditAdvisories.length 
 }
@@ -397,12 +433,13 @@ improved-yarn-audit [OPTIONS]
 
 Options:
 
-  --min-severity, -s                Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
-  --exclude, -e                     CSV list of advisory ID's to ignore, e.x. 432,564 (this overrides .iyarc)
-  --retry-on-network-failure, -r    Retry audit if NPM registry throws a network error
-  --ignore-dev-deps, -i             Ignore advisories for dev dependencies
-  --debug, -d                       Print out raw audit report's and advisory details
-  --help, -h                        Show this information
+  --min-severity, -s                  Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
+  --exclude, -e                       CSV list of advisory ID's to ignore, e.x. 432,564 (this overrides .iyarc)
+  --retry-on-network-failure, -r      Retry audit if NPM registry throws a network error
+  --ignore-dev-deps, -i               Ignore advisories for dev dependencies
+  --fail-on-missing-exclusions, -f    Return a non-zero exit code when advisory exclusions are no longer detected by yarn audit
+  --debug, -d                         Print out raw audit report's and advisory details
+  --help, -h                          Show this information
   
 The CSV list of advisory ID's can also be provided in a '.iyarc' file in the current working directory. This file also supports
 comments, lines beginning with a '#' character are ignored.
@@ -491,13 +528,17 @@ function parseCommandLineArgs() {
     if (isFlag(optionFlags.ignoreDevDependecies, a, b)) {
       ignoreDevDependecies = true
     }
+  
+    if (isFlag(optionFlags.failOnMissingExclusions, a, b)) {
+      failOnMissingAdvisoryExclusions = true
+    }
 
     return b
   }, "")
 }
 
 async function main() {
-  console.log("Improved Yarn Audit - v2.1.0")
+  console.log("Improved Yarn Audit - v2.2.0")
   console.log()
 
   parseCommandLineArgs()
