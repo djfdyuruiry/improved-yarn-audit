@@ -105,7 +105,7 @@ runTests() {
   cp huge-package.json package.json
   cp huge-yarn.lock yarn.lock
 
-  callIya -s high -e 1486
+  callIya -s high -e 1213
   testExitCode "the package JSON has a large number of dependencies" "0" "$?"
 
   rm -f package.json
