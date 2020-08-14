@@ -54,16 +54,22 @@ yarn run improved-yarn-audit --exclude 253,456,811
 
 ## .iyarc File
 
-If an `.iyarc` file is present in the current working directory, it will be parsed and used to specify a CSV list of advisory exclusions.
+If an `.iyarc` file is present in the current working directory, it will be parsed and used to specify a list of advisory exclusions.
+
+Advisory exclusions to be ignored can either be provided on their own line, or as a comma separated list.
 
 Example `.iyarc` file:
 
 ```bash
 # This file can contain comments, you could do something like:
-#
 # 34 is ignored because there is no fix available (last checked 20th March 2020)
-#
-34,53,124
+34
+
+# This one doesn't affect us
+1435
+
+# Let's ignore these too
+46,53,124
 ```
 
 **Note: if you pass in exclusions using the command line, these will override the `.iyarc` file**
