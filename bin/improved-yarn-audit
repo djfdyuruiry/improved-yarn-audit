@@ -466,9 +466,8 @@ function errorAndExit(msg) {
 }
 
 function isNumbersCsv(str) {
-  return str.trim()
-    .replace(/\s/g, "")    // filter out spaces
-    .match(/^(,|\d)*\d$/)  // number csv regex (without spaces)
+  const numbers = str.trim().replace(/\s/g, "") // filter out spaces
+  return isNullOrEmpty(numbers) || numbers.match(/^(,|\d)*\d$/) // number csv regex (without spaces)
 }
 
 function isNullOrEmpty(str) {

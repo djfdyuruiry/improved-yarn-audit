@@ -153,6 +153,11 @@ runTests() {
   # test 20
   callIya -d
   testExitCode "--debug is passed" "7" "$?"
+
+  #test 21
+  echo "#" > .iyarc
+  callIya
+  testExitCode ".iyarc contains no exclusions" "7" "$?"
 }
 
 runTests
