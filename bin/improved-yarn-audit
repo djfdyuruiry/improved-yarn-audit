@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-const { spawn } = require("child_process")
+const { execSync, spawn } = require("child_process")
 const { randomBytes } = require("crypto")
 const {
   existsSync,
@@ -13,9 +13,11 @@ const {
 } = require("fs")
 const { tmpdir } = require("os")
 const path = require("path")
+const { env, exit, platform } = require("process")
 const { createInterface } = require("readline")
 
 const joinPath = path.join
+const isWindows = platform === "win32"
 
 const packageInfo = require(joinPath(__dirname, "..", "package.json"));
 
@@ -145,8 +147,15 @@ function printAuditReport(
 
   filteredAuditAdvisories.forEach(a => {
     const formattedSeverity = a.severity.toUpperCase().padEnd(maxSeverityNameLength, " ")
+    const affectedModulePaths = flatMap(a.findings, f => f.paths)
+    const affectedModules = affectedModulePaths.join(", ")
 
-    console.log(`Vulnerability Found: ${formattedSeverity} - ${a.url}`)
+    console.log(`Vulnerability Found:
+
+  Severity: ${formattedSeverity}
+  Modules: ${affectedModules}
+  URL: ${a.url}
+`)
   })
 
   if (filteredAuditAdvisories.length > 0) {
@@ -222,6 +231,8 @@ async function iterateOverAuditResults(action) {
   iterator.on("line", action)
 
   await new Promise(resolve => iterator.on("close", resolve))
+
+  auditResultsFileStream.close()
 }
 
 function getAuditResultsFileStream(mode) {
@@ -234,10 +245,19 @@ function getAuditResultsFileStream(mode) {
   return createReadStream(auditResultsFilePath)
 }
 
-function cleanupAuditResultsFile() {
-  if (existsSync(auditResultsFilePath)) {
-    unlinkSync(auditResultsFilePath)
+async function cleanupAuditResultsFile() {
+  if (!existsSync(auditResultsFilePath)) {
+    return
   }
+
+  if (isWindows) {
+    // workaround for unlinkSync issues on windows
+    execSync(`del "${auditResultsFilePath}"`)
+
+    return
+  }
+
+  unlinkSync(auditResultsFilePath)
 }
 
 async function invokeYarnAudit() {
@@ -250,7 +270,8 @@ async function invokeYarnAudit() {
   cleanupAuditResultsFile()
 
   const auditResultsFileStream = getAuditResultsFileStream("w")
-  const yarnProcess = spawn("yarn", auditParams)
+  const yarnBinaryPostFix = isWindows ? ".cmd" : ""
+  const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, { env: env })
 
   yarnProcess.stdout.pipe(auditResultsFileStream)
   yarnProcess.stderr.pipe(auditResultsFileStream)
@@ -573,15 +594,23 @@ async function main() {
       ""
   )
 
-  let advisoryCount = await withTempFile(filePath => {
-    auditResultsFilePath = filePath
+  try
+  {
+    let advisoryCount = await withTempFile(filePath => {
+      auditResultsFilePath = filePath
 
-    logDebug(`Temporary file path: ${auditResultsFilePath}`)
+      logDebug(`Temporary file path: ${auditResultsFilePath}`)
 
-    return runAuditReport()
-  }, cleanupAuditResultsFile)
+      return runAuditReport()
+    }, cleanupAuditResultsFile)
+    
+    exit(advisoryCount)
+  } catch (e) {
+    console.error("Audit failed due to an error: \n")
+    console.error(e)
+  }
 
-  process.exit(advisoryCount)
+  exit(1)
 }
 
 main()
