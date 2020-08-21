@@ -48,7 +48,7 @@ runTests() {
   testExitCode "vulnerabilities are present and they are excluded on the command line" "0" "$?"
 
   # test 3
-  echo "${excludedAdvisories}" > .iyarc
+  echo $'3\n\n8\n28\n\n29\n535,880,1469' > .iyarc
 
   callIya
   testExitCode "vulnerabilities are present and they are excluded in .iyarc" "0" "$?"
@@ -57,7 +57,7 @@ runTests() {
   echo "# excluding 3 because I feel like it, ok?" > .iyarc
   echo "#" >> .iyarc
   echo "##" >> .iyarc
-  echo "${excludedAdvisories}" >> .iyarc
+  echo $'3\n\n8\n28\n\n29\n535,880,1469' >> .iyarc
 
   callIya
   testExitCode "they are excluded in .iyarc file with comments" "0" "$?"

@@ -68,7 +68,7 @@ Example `.iyarc` file:
 # This one doesn't affect us
 1435
 
-# Let's ignore these too
+# We can also ignore all these, as a comma separated list
 46,53,124
 ```
 
