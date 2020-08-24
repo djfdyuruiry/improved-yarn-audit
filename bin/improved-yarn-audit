@@ -506,10 +506,11 @@ function loadExclusionsFromFileIfPresent() {
     return
   }
 
-  let advisoriesCsv = readFileSync(exclusionsFileName)
+  let matchedAdvisories = readFileSync(exclusionsFileName)
     .toString()
-    .match(/(?<=^(?:\d+,)*)\d+(?=(?:,\d+)*$)/gm)
-    .join(',')
+    .match(/(?<=^(?:\d+,)*)\d+(?=(?:,\d+)*$)/gm);
+
+  let advisoriesCsv = matchedAdvisories ? matchedAdvisories.join(',') : '';
 
   logDebug(`.iyarc contents (excluding comments): ${advisoriesCsv}`)
 
