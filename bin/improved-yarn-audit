@@ -506,15 +506,17 @@ function loadExclusionsFromFileIfPresent() {
     return
   }
 
-  let advisoriesCsv = readFileSync(exclusionsFileName)
+  let matchedAdvisories = readFileSync(exclusionsFileName)
     .toString()
-    .replace(/^\s*#.*$/mg, "") // ignore comment lines, if present
+    .match(/(?<=^(?:\d+,)*)\d+(?=(?:,\d+)*$)/gm);
+
+  let advisoriesCsv = matchedAdvisories ? matchedAdvisories.join(',') : '';
 
   logDebug(`.iyarc contents (excluding comments): ${advisoriesCsv}`)
 
   if (!isNumbersCsv(advisoriesCsv)) {
-    errorAndExit(`ERROR: ${exclusionsFileName} is not in the correct format, excluded advisories must be provided as ` +
-      "a CSV list, for example: '2341,21,43'")
+    errorAndExit(`ERROR: ${exclusionsFileName} is not in the correct format, excluded advisories must be provided on ` +
+      "individual lines, or as a CSV list (eg: '2341,21,43')")
   }
 
   console.log(`Reading excluded advisories from ${exclusionsFileName}`)
