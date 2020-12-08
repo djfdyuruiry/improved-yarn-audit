@@ -70,10 +70,14 @@ function flatMap (arr, callback) {
   return returnArray
 }
 
-function logDebug(str) {
-  if (debugEnabled) {
-    console.log(`DEBUG: ${str}`)
+async function logDebug(strOrFunc) {
+  if (!debugEnabled) {
+    return
   }
+
+  let output = typeof strOrFunc === "function" ? await strOrFunc() : strOrFunc
+
+  console.log(`DEBUG: ${output}`)
 }
 
 function checkForMissingExclusions(allAdvisories) {
@@ -133,9 +137,9 @@ function printAuditReport(
   severityIgnoredAuditAdvisories,
   excludedAuditAdvisories
 ) {
-  logDebug(`Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
-  logDebug(`Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
-  logDebug(`Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
+  logDebug(() => `Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
+  logDebug(() => `Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
+  logDebug(() => `Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
 
   const filteredAdvisoryReport = buildAdvisoryReport(
     devDependencyAdvisoryIds,
@@ -283,11 +287,7 @@ async function invokeYarnAudit() {
 
   auditResultsFileStream.close()
 
-  if (debugEnabled) {
-    const outputStats = statSync(auditResultsFilePath)
-
-    logDebug(`Yarn audit output size: ${outputStats.size} bytes`)
-  }
+  logDebug(() => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`)
 
   return exitCode
 }
@@ -340,9 +340,7 @@ function getDevDependenciesRegex() {
     return
   }
 
-  const devDependenciesCsv = devDependencies.join(", ")
-
-  logDebug(`Dev dependencies: ${devDependenciesCsv}`)
+  logDebug(() => `Dev dependencies: ${devDependencies.join(", ")}`)
 
   ignoreDevDependencies
     ? logDebug("Dev dependencies will be ignored")
@@ -361,9 +359,12 @@ async function runAuditReport() {
 
   await runYarnAudit()
 
-  if (debugEnabled) {
-    logDebug(`Audit summary:\n${await getAuditSummary()}\n`)
-  }
+  logDebug(async () => {
+    let auditSummaryJson = await getAuditSummary()
+    let auditSummary = toJson(JSON.parse(auditSummaryJson))
+
+    return `Audit summary:\n${auditSummary}\n`
+  })
 
   const allAdvisories = [];
   const filteredAuditAdvisories = []
