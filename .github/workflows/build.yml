@@ -11,4 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: nvm use && npm test
+
+      - name: Install Node.JS Version
+        shell: bash -l -eo pipefail {0}
+        run: nvm install
+
+      - name: Test
+        shell: bash -l -eo pipefail {0}
+        run: nvm use && yarn test
