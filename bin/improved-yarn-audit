@@ -274,22 +274,31 @@ async function invokeYarnAudit() {
   cleanupAuditResultsFile()
 
   const auditResultsFileStream = getAuditResultsFileStream("w")
-  const yarnBinaryPostFix = isWindows ? ".cmd" : ""
-  const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, { env: env })
 
-  yarnProcess.stdout.pipe(auditResultsFileStream)
-  yarnProcess.stderr.pipe(auditResultsFileStream)
+  return new Promise(resolve => {
+    auditResultsFileStream.on("open", async () => {
+      const yarnBinaryPostFix = isWindows ? ".cmd" : ""
+      const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, {
+        env: env,
+        stdio: [
+          'pipe',
+          auditResultsFileStream,
+          auditResultsFileStream,
+        ]
+      })
 
-  let exitCode = await new Promise((resolve, reject) =>
-    yarnProcess.on("exit", resolve)
-      .on("error", reject)
-  )
+      let exitCode = await new Promise((resolve, reject) =>
+      yarnProcess.on("exit", resolve)
+        .on("error", reject)
+      )
 
-  auditResultsFileStream.close()
+      auditResultsFileStream.close()
 
-  logDebug(() => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`)
+      logDebug(() => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`)
 
-  return exitCode
+      resolve(exitCode);
+    });
+  })
 }
 
 async function runYarnAudit() {
