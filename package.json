@@ -1,7 +1,7 @@
 {
   "name": "improved-yarn-audit",
   "description": "A wrapper around yarn audit that fixes many issues",
-  "version": "2.3.2",
+  "version": "2.3.1",
   "license": "MIT",
   "repository": {
     "type": "git",
