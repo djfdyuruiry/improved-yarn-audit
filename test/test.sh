@@ -28,7 +28,7 @@ callIya() {
 }
 
 runTests() {
-  excludedAdvisories="3,8,28,29,535,880,1469"
+  excludedAdvisories="3,8,28,29,535,880,1469,1594"
 
   cd "${scriptPath}"
 
@@ -41,14 +41,14 @@ runTests() {
 
   # test 1
   callIya
-  testExitCode "vulnerabilities are present and not excluded" "7" "$?"
+  testExitCode "vulnerabilities are present and not excluded" "8" "$?"
 
   # test 2
   callIya -e "${excludedAdvisories}"
   testExitCode "vulnerabilities are present and they are excluded on the command line" "0" "$?"
 
   # test 3
-  echo $'3\n\n8\n28\n\n29\n535,880,1469' > .iyarc
+  echo $'3\n\n8\n28\n\n29\n535,880,1469,1594' > .iyarc
 
   callIya
   testExitCode "vulnerabilities are present and they are excluded in .iyarc" "0" "$?"
@@ -57,7 +57,7 @@ runTests() {
   echo "# excluding 3 because I feel like it, ok?" > .iyarc
   echo "#" >> .iyarc
   echo "##" >> .iyarc
-  echo $'3\n\n8\n28\n\n29\n535,880,1469' >> .iyarc
+  echo $'3\n\n8\n28\n\n29\n535,880,1469,1594' >> .iyarc
 
   callIya
   testExitCode "they are excluded in .iyarc file with comments" "0" "$?"
@@ -65,7 +65,7 @@ runTests() {
   # test 5
   echo "${excludedAdvisories}" > .iyarc
 
-  callIya -e 1469
+  callIya -e 1469,1594
   testExitCode "vulnerabilities are present and they are excluded in .iyarc but exclusions are in the command line" "6" "$?"
 
   # test 6
@@ -74,27 +74,27 @@ runTests() {
 
   # test 7
   callIya -s moderate
-  testExitCode "min severity is moderate" "6" "$?"
+  testExitCode "min severity is moderate" "7" "$?"
 
   # test 8
   callIya -s high
-  testExitCode "min severity is high" "3" "$?"
+  testExitCode "min severity is high" "4" "$?"
 
   # test 9
-  callIya -s moderate -e 8,28,29,535,880,1469
+  callIya -s moderate -e 8,28,29,535,880,1469,1594
   testExitCode "they are excluded on the command line and min severity is moderate" "0" "$?"
 
   # test 10
-  callIya -s high -e 28,29,1469
+  callIya -s high -e 28,29,1469,1594
   testExitCode "they are excluded on the command line and min severity is high" "0" "$?"
 
   # test 11
-  echo "8,28,29,535,880,1469" > .iyarc
+  echo "8,28,29,535,880,1469,1594" > .iyarc
   callIya -s moderate
   testExitCode "they are excluded in .iyarc and min severity is moderate" "0" "$?"
 
   # test 12
-  echo "28,29,1469" > .iyarc
+  echo "28,29,1469,1594" > .iyarc
   callIya -s high 
   testExitCode "they are excluded in .iyarc and min severity is high" "0" "$?"
 
@@ -105,7 +105,7 @@ runTests() {
   cp huge-package.json package.json
   cp huge-yarn.lock yarn.lock
 
-  callIya -s high -e 1213,1550,1555,1561
+  callIya -s high -e 1213,1550,1555,1561,1594,1654,1673,1707
   testExitCode "the package JSON has a large number of dependencies" "0" "$?"
 
   rm -f package.json
@@ -152,12 +152,12 @@ runTests() {
 
   # test 20
   callIya -d
-  testExitCode "--debug is passed" "7" "$?"
+  testExitCode "--debug is passed" "8" "$?"
 
   #test 21
   echo "#" > .iyarc
   callIya
-  testExitCode ".iyarc contains no exclusions" "7" "$?"
+  testExitCode ".iyarc contains no exclusions" "8" "$?"
 }
 
 runTests

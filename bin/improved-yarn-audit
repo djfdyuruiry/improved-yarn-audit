@@ -151,6 +151,7 @@ function printAuditReport(
 
   filteredAuditAdvisories.forEach(a => {
     const formattedSeverity = a.severity.toUpperCase().padEnd(maxSeverityNameLength, " ")
+
     const affectedModulePaths = flatMap(a.findings, f => f.paths)
     const affectedModules = affectedModulePaths.join(", ")
 
@@ -264,6 +265,29 @@ async function cleanupAuditResultsFile() {
   unlinkSync(auditResultsFilePath)
 }
 
+async function streamYarnAuditOutput(auditParams, auditResultsFileStream) {
+  const yarnBinaryPostFix = isWindows ? ".cmd" : ""
+  const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, {
+    env: env,
+    stdio: [
+      'pipe',
+      auditResultsFileStream,
+      auditResultsFileStream,
+    ]
+  })
+
+  let exitCode = await new Promise((resolve, reject) =>
+    yarnProcess.on("exit", resolve)
+      .on("error", reject)
+  )
+
+  auditResultsFileStream.close()
+
+  logDebug(() => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`)
+
+  return exitCode
+}
+
 async function invokeYarnAudit() {
   const auditParams = ["audit", "--json", `--level=${minSeverityName}`];
 
@@ -275,30 +299,15 @@ async function invokeYarnAudit() {
 
   const auditResultsFileStream = getAuditResultsFileStream("w")
 
-  return new Promise(resolve => {
+  let exitCode = await new Promise(resolve => 
     auditResultsFileStream.on("open", async () => {
-      const yarnBinaryPostFix = isWindows ? ".cmd" : ""
-      const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, {
-        env: env,
-        stdio: [
-          'pipe',
-          auditResultsFileStream,
-          auditResultsFileStream,
-        ]
-      })
+      let exitCode = await streamYarnAuditOutput(auditParams, auditResultsFileStream)
 
-      let exitCode = await new Promise((resolve, reject) =>
-      yarnProcess.on("exit", resolve)
-        .on("error", reject)
-      )
+      resolve(exitCode)
+    })
+  )
 
-      auditResultsFileStream.close()
-
-      logDebug(() => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`)
-
-      resolve(exitCode);
-    });
-  })
+  return exitCode
 }
 
 async function runYarnAudit() {
@@ -310,7 +319,8 @@ async function runYarnAudit() {
 
   if (existsSync(auditResultsFilePath)) {    
     await iterateOverAuditResults(a => 
-      networkErrorHasOccurred = a.includes("Error: Request failed ")
+      networkErrorHasOccurred = networkErrorHasOccurred
+        || a.includes("Error: Request failed ")
     )
   }
 
