@@ -526,11 +526,17 @@ function loadExclusionsFromFileIfPresent() {
     return
   }
 
-  let matchedAdvisories = readFileSync(exclusionsFileName)
+  let matchedNpmAdvisories = readFileSync(exclusionsFileName)
     .toString()
     .match(/(?<=^(?:\d+,)*)\d+(?=(?:,\d+)*$)/gm);
 
-  let advisoriesCsv = matchedAdvisories ? matchedAdvisories.join(',') : '';
+  let matchedGithubAdvisories = readFileSync(exclusionsFileName)
+    .toString()
+    .match(/^(GHSA-([a-z0-9]{4})-([a-z0-9]{4})-([a-z0-9]{4}))$/gm);
+	
+  let advisoriesCsv = matchedNpmAdvisories ? matchedNpmAdvisories.join(',') : '';
+  let advisoriesGithubCsv = matchedGithubAdvisories ? matchedGithubAdvisories.join(',') : '';
+  advisoriesCsv.concat(advisoriesGithubCsv);
 
   logDebug(`.iyarc contents (excluding comments): ${advisoriesCsv}`)
 
