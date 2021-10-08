@@ -16,10 +16,12 @@ const path = require("path")
 const { env, exit, platform } = require("process")
 const { createInterface } = require("readline")
 
+const GITHUB_ADVISORY_CODE = "GHSA"
+
 const joinPath = path.join
 const isWindows = platform === "win32"
 
-const packageInfo = require(joinPath(__dirname, "..", "package.json"));
+const packageInfo = require(joinPath(__dirname, "..", "package.json"))
 
 const optionFlags = {
   severity: ["--min-severity", "-s"],
@@ -57,7 +59,7 @@ function severityShouldBeIgnored(severity) {
   return severityToIntMap[severity] < minSeverity
 }
 
-function flatMap (arr, callback) {
+function flatMap(arr, callback) {
   let arrays = arr
   let returnArray = []
 
@@ -65,7 +67,7 @@ function flatMap (arr, callback) {
     arrays = arr.map(callback)
   }
 
-  arrays.forEach(a => a.forEach(i => returnArray.push(i)))
+  arrays.forEach((a) => a.forEach((i) => returnArray.push(i)))
 
   return returnArray
 }
@@ -81,8 +83,8 @@ async function logDebug(strOrFunc) {
 }
 
 function checkForMissingExclusions(allAdvisories) {
-  const missingExcludedAdvisories = excludedAdvisories.filter(ea =>
-    allAdvisories.find(a => a.id === ea) === undefined
+  const missingExcludedAdvisories = excludedAdvisories.filter(
+    (ea) => allAdvisories.find((a) => a.id === ea) === undefined
   )
 
   if (missingExcludedAdvisories.length < 1) {
@@ -93,12 +95,18 @@ function checkForMissingExclusions(allAdvisories) {
 
   console.log()
 
-  console.log("WARNING: One or more excluded audit advisories were missing from yarn audit output: "
-    +`${missingExcludedAdvisories.join(",")}`)
+  console.log(
+    "WARNING: One or more excluded audit advisories were missing from yarn audit output: " +
+      `${missingExcludedAdvisories.join(",")}`
+  )
 
   if (failOnMissingAdvisoryExclusions) {
-    console.error(`ERROR: ${optionFlags.failOnMissingExclusions.join("/")} was specified, `
-      + "exit code will indicate number of missing exclusions")
+    console.error(
+      `ERROR: ${optionFlags.failOnMissingExclusions.join(
+        "/"
+      )} was specified, ` +
+        "exit code will indicate number of missing exclusions"
+    )
     process.exit(missingExcludedAdvisories.length)
   }
 }
@@ -123,8 +131,7 @@ function buildAdvisoryReport(
   }
 
   if (excludedAuditAdvisories.length > 0) {
-    filteredAdvisoryReport +=
-      `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
+    filteredAdvisoryReport += `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
   }
 
   return filteredAdvisoryReport
@@ -138,8 +145,15 @@ function printAuditReport(
   excludedAuditAdvisories
 ) {
   logDebug(() => `Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
-  logDebug(() => `Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`)
-  logDebug(() => `Severity ignored advisories:\n${toJson(severityIgnoredAuditAdvisories)}\n`)
+  logDebug(
+    () => `Excluded audit advisories:\n${toJson(excludedAuditAdvisories)}\n`
+  )
+  logDebug(
+    () =>
+      `Severity ignored advisories:\n${toJson(
+        severityIgnoredAuditAdvisories
+      )}\n`
+  )
 
   const filteredAdvisoryReport = buildAdvisoryReport(
     devDependencyAdvisoryIds,
@@ -147,12 +161,16 @@ function printAuditReport(
     excludedAuditAdvisories
   )
 
-  console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`)
+  console.log(
+    `Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`
+  )
 
-  filteredAuditAdvisories.forEach(a => {
-    const formattedSeverity = a.severity.toUpperCase().padEnd(maxSeverityNameLength, " ")
+  filteredAuditAdvisories.forEach((a) => {
+    const formattedSeverity = a.severity
+      .toUpperCase()
+      .padEnd(maxSeverityNameLength, " ")
 
-    const affectedModulePaths = flatMap(a.findings, f => f.paths)
+    const affectedModulePaths = flatMap(a.findings, (f) => f.paths)
     const affectedModules = affectedModulePaths.join(", ")
 
     console.log(`Vulnerability Found:
@@ -170,24 +188,21 @@ function printAuditReport(
   console.log("Run `yarn audit` for more information")
 }
 
-const sleep = (ms) => new Promise(r => setTimeout(r, ms))
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 function isNonExcludedAdvisory(advisory, devDependencyAdvisoryIds) {
   return (
-    !severityShouldBeIgnored(advisory.severity)
-    && !excludedAdvisories.includes(advisory.id)
-  )
-  &&
-  (
-    !devDependencyAdvisoryIds.includes(advisory.id)
-    || !ignoreDevDependencies
+    !severityShouldBeIgnored(advisory.severity) &&
+    !excludedAdvisories.includes(advisory.id) &&
+    !excludedAdvisories.includes(advisory.github_advisory_id) &&
+    (!devDependencyAdvisoryIds.includes(advisory.id) || !ignoreDevDependencies)
   )
 }
 
 function parseAuditJson(jsonString) {
   try {
     return JSON.parse(jsonString)
-  } catch(ex) {
+  } catch (ex) {
     console.error(`ERROR: Unable to parse yarn audit output: ${ex}`)
     console.error("Try running `yarn audit` for more info")
 
@@ -200,7 +215,7 @@ async function getAuditSummary() {
 
   let auditSummary = ""
 
-  await iterateOverAuditResults(l => auditSummary = l)
+  await iterateOverAuditResults((l) => (auditSummary = l))
 
   return auditSummary
 }
@@ -222,7 +237,7 @@ async function handleAuditNetworkError(output) {
 async function dumpAuditResultsAsString() {
   let output = ""
 
-  await iterateOverAuditResults(l => output += l)
+  await iterateOverAuditResults((l) => (output += l))
 
   return output
 }
@@ -235,13 +250,15 @@ async function iterateOverAuditResults(action) {
 
   iterator.on("line", action)
 
-  await new Promise(resolve => iterator.on("close", resolve))
+  await new Promise((resolve) => iterator.on("close", resolve))
 
   auditResultsFileStream.close()
 }
 
 function getAuditResultsFileStream(mode) {
-  logDebug(`Opening file stream for file '${auditResultsFilePath}' in '${mode}' mode`)
+  logDebug(
+    `Opening file stream for file '${auditResultsFilePath}' in '${mode}' mode`
+  )
 
   if (mode === "w") {
     return createWriteStream(auditResultsFilePath)
@@ -269,29 +286,26 @@ async function streamYarnAuditOutput(auditParams, auditResultsFileStream) {
   const yarnBinaryPostFix = isWindows ? ".cmd" : ""
   const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, {
     env: env,
-    stdio: [
-      'pipe',
-      auditResultsFileStream,
-      auditResultsFileStream,
-    ]
+    stdio: ["pipe", auditResultsFileStream, auditResultsFileStream]
   })
 
   let exitCode = await new Promise((resolve, reject) =>
-    yarnProcess.on("exit", resolve)
-      .on("error", reject)
+    yarnProcess.on("exit", resolve).on("error", reject)
   )
 
   auditResultsFileStream.close()
 
-  logDebug(() => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`)
+  logDebug(
+    () => `Yarn audit output size: ${statSync(auditResultsFilePath).size} bytes`
+  )
 
   return exitCode
 }
 
 async function invokeYarnAudit() {
-  const auditParams = ["audit", "--json", `--level=${minSeverityName}`];
+  const auditParams = ["audit", "--json", `--level=${minSeverityName}`]
 
-  if(ignoreDevDependencies) {
+  if (ignoreDevDependencies) {
     auditParams.push("--groups=dependencies")
   }
 
@@ -299,9 +313,12 @@ async function invokeYarnAudit() {
 
   const auditResultsFileStream = getAuditResultsFileStream("w")
 
-  let exitCode = await new Promise(resolve => 
+  let exitCode = await new Promise((resolve) =>
     auditResultsFileStream.on("open", async () => {
-      let exitCode = await streamYarnAuditOutput(auditParams, auditResultsFileStream)
+      let exitCode = await streamYarnAuditOutput(
+        auditParams,
+        auditResultsFileStream
+      )
 
       resolve(exitCode)
     })
@@ -317,10 +334,11 @@ async function runYarnAudit() {
 
   let networkErrorHasOccurred = false
 
-  if (existsSync(auditResultsFilePath)) {    
-    await iterateOverAuditResults(a => 
-      networkErrorHasOccurred = networkErrorHasOccurred
-        || a.includes("Error: Request failed ")
+  if (existsSync(auditResultsFilePath)) {
+    await iterateOverAuditResults(
+      (a) =>
+        (networkErrorHasOccurred =
+          networkErrorHasOccurred || a.includes("Error: Request failed "))
     )
   }
 
@@ -331,13 +349,17 @@ async function runYarnAudit() {
   }
 
   if (exitCode === 1) {
-    errorAndExit(`ERROR: Yarn audit error:\n${await dumpAuditResultsAsString()}`)
+    errorAndExit(
+      `ERROR: Yarn audit error:\n${await dumpAuditResultsAsString()}`
+    )
   }
 }
 
 function getDevDependenciesRegex() {
   if (!existsSync("package.json")) {
-    console.log("WARNING: No package.json was found in the current working directory")
+    console.log(
+      "WARNING: No package.json was found in the current working directory"
+    )
     logDebug("Dev dependencies will not be ignored")
 
     return
@@ -348,7 +370,10 @@ function getDevDependenciesRegex() {
 
   let devDependencies = []
 
-  if (typeof package === "object" && typeof package.devDependencies === "object") {
+  if (
+    typeof package === "object" &&
+    typeof package.devDependencies === "object"
+  ) {
     devDependencies = Object.keys(package.devDependencies)
   }
 
@@ -363,9 +388,9 @@ function getDevDependenciesRegex() {
 
   ignoreDevDependencies
     ? logDebug("Dev dependencies will be ignored")
-    : logDebug("Dev dependencies will not be ignored") 
+    : logDebug("Dev dependencies will not be ignored")
 
-  const devDependenciesOr = devDependencies.map(d => `(${d})`).join("|")
+  const devDependenciesOr = devDependencies.map((d) => `(${d})`).join("|")
   const devDependenciesRegex = `^${devDependenciesOr}>*.*$`
 
   logDebug(`Dev dependencies regex: ${devDependenciesRegex}`)
@@ -385,7 +410,7 @@ async function runAuditReport() {
     return `Audit summary:\n${auditSummary}\n`
   })
 
-  const allAdvisories = [];
+  const allAdvisories = []
   const filteredAuditAdvisories = []
   const severityIgnoredAuditAdvisories = []
   const excludedAuditAdvisories = []
@@ -393,12 +418,12 @@ async function runAuditReport() {
   let devDependencyAdvisories = []
   let devDependencyAdvisoryIds = []
 
-  await iterateOverAuditResults(resultJson => {
+  await iterateOverAuditResults((resultJson) => {
     const potentialResult = parseAuditJson(resultJson)
-  
+
     if (
-      typeof potentialResult.type !== "string"
-      || potentialResult.type !== "auditAdvisory"
+      typeof potentialResult.type !== "string" ||
+      potentialResult.type !== "auditAdvisory"
     ) {
       return
     }
@@ -408,13 +433,15 @@ async function runAuditReport() {
     allAdvisories.push(result)
 
     if (devDependenciesRegex) {
-      const isDevDependencyAdvisory = flatMap(result.findings, f => f.paths)
-        .every(d => d.match(devDependenciesRegex))
+      const isDevDependencyAdvisory = flatMap(
+        result.findings,
+        (f) => f.paths
+      ).every((d) => d.match(devDependenciesRegex))
 
       if (isDevDependencyAdvisory) {
         devDependencyAdvisories = devDependencyAdvisories.concat(result)
         devDependencyAdvisoryIds = devDependencyAdvisories.concat(
-          devDependencyAdvisories.map(d => d.id)
+          devDependencyAdvisories.map((d) => d.id)
         )
       }
     }
@@ -424,8 +451,9 @@ async function runAuditReport() {
     }
 
     if (
-      excludedAdvisories.includes(result.id) 
-      && !severityShouldBeIgnored(result.severity)
+      (excludedAdvisories.includes(result.id) ||
+        excludedAdvisories.includes(result.github_advisory_id)) &&
+      !severityShouldBeIgnored(result.severity)
     ) {
       excludedAuditAdvisories.push(result)
     }
@@ -445,7 +473,7 @@ async function runAuditReport() {
 
   checkForMissingExclusions(allAdvisories)
 
-  return filteredAuditAdvisories.length 
+  return filteredAuditAdvisories.length
 }
 
 async function withTempDir(action, cleanupAction) {
@@ -453,19 +481,16 @@ async function withTempDir(action, cleanupAction) {
   const tempDirPath = mkdtempSync(prefix)
 
   try {
-		return await action(tempDirPath)
-	} finally {
+    return await action(tempDirPath)
+  } finally {
     cleanupAction()
 
-		rmdirSync(
-      tempDirPath,
-      { recursive: true }
-    )
-	}
+    rmdirSync(tempDirPath, { recursive: true })
+  }
 }
 
 function withTempFile(action, cleanupAction) {
-  return withTempDir(tempDirPath => {
+  return withTempDir((tempDirPath) => {
     const randomName = randomBytes(16).toString("hex")
     const tmpFilePath = joinPath(tempDirPath, randomName)
 
@@ -506,9 +531,59 @@ function errorAndExit(msg) {
   process.exit(1)
 }
 
-function isNumbersCsv(str) {
-  const numbers = str.trim().replace(/\s/g, "") // filter out spaces
-  return isNullOrEmpty(numbers) || numbers.match(/^(,|\d)*\d$/) // number csv regex (without spaces)
+function parseJSONSafeExcludeList(str) {
+  console.log("parseJSONSafeExcludeList 1")
+  const returnVal = str
+    .split(",")
+    .map((option) => {
+      console.log("parseJSONSafeExcludeList 2")
+      if (option.startsWith(GITHUB_ADVISORY_CODE)) {
+        return `"${option}"`
+      }
+
+      return option
+    })
+    .filter((str) => str)
+    .join(",")
+
+  console.log("parseJSONSafeExcludeList 3")
+
+  return returnVal
+}
+
+function parseConfigToJson(str) {
+  console.log("parseConfigToJson 1")
+  const jsonSafeString = parseJSONSafeExcludeList(str)
+  console.log("parseConfigToJson 2 jsonSafeString", jsonSafeString)
+
+  return JSON.parse(`[${jsonSafeString}]`)
+}
+
+function isValidConfigFormat(str) {
+  try {
+    console.log("isValidConfigFormat", str)
+    const testExcludeList = parseConfigToJson(str)
+    console.log("isValidConfigFormat stage 1", testExcludeList)
+    console.log(
+      "isValidConfigFormat stage 1",
+      typeof testExcludeList === typeof []
+    )
+
+    testExcludeList.forEach((excludeOption) => {
+      console.log("isValidConfigFormat stage 2", excludeOption)
+      if (
+        parseInt(excludeOption) === NaN &&
+        !excludeOption.startsWith(GITHUB_ADVISORY_CODE)
+      ) {
+        throw "Invalid format"
+      }
+    })
+    console.log("isValidConfigFormat stage 3")
+
+    return true
+  } catch {
+    return false
+  }
 }
 
 function isNullOrEmpty(str) {
@@ -522,38 +597,50 @@ function loadExclusionsFromFileIfPresent() {
   }
 
   if (excludedAdvisories.length > 0) {
-    console.log(`WARNING: Ignoring ${exclusionsFileName} as exclusions were passed in via command line`)
+    console.log(
+      `WARNING: Ignoring ${exclusionsFileName} as exclusions were passed in via command line`
+    )
     return
   }
 
   let matchedNpmAdvisories = readFileSync(exclusionsFileName)
     .toString()
-    .match(/(?<=^(?:\d+,)*)\d+(?=(?:,\d+)*$)/gm);
+    .match(/(?<=^(?:\d+,)*)\d+(?=(?:,\d+)*$)/gm)
 
   let matchedGithubAdvisories = readFileSync(exclusionsFileName)
     .toString()
-    .match(/^(GHSA-([a-z0-9]{4})-([a-z0-9]{4})-([a-z0-9]{4}))$/gm);
-	
-  let advisoriesCsv = matchedNpmAdvisories ? matchedNpmAdvisories.join(',') : '';
-  let advisoriesGithubCsv = matchedGithubAdvisories ? matchedGithubAdvisories.join(',') : '';
-  advisoriesCsv.concat(advisoriesGithubCsv);
+    .match(/^(GHSA-([a-z0-9]{4})-([a-z0-9]{4})-([a-z0-9]{4}))$/gm)
+
+  let advisoriesNPMCsv = matchedNpmAdvisories
+    ? matchedNpmAdvisories.join(",")
+    : ""
+
+  let advisoriesGithubCsv = matchedGithubAdvisories
+    ? matchedGithubAdvisories.join(",")
+    : ""
+
+  let advisoriesCsv = [advisoriesNPMCsv, advisoriesGithubCsv].join(",")
 
   logDebug(`.iyarc contents (excluding comments): ${advisoriesCsv}`)
 
-  if (!isNumbersCsv(advisoriesCsv)) {
-    errorAndExit(`ERROR: ${exclusionsFileName} is not in the correct format, excluded advisories must be provided on ` +
-      "individual lines, or as a CSV list (eg: '2341,21,43')")
+  if (!isValidConfigFormat(advisoriesCsv)) {
+    errorAndExit(
+      `ERROR: ${exclusionsFileName} is not in the correct format, excluded advisories must be provided on ` +
+        "individual lines, or as a CSV list (eg: '2341,21,43,GHSA-42xw-2xvc-qx8mas')"
+    )
   }
 
   console.log(`Reading excluded advisories from ${exclusionsFileName}`)
 
-  excludedAdvisories = JSON.parse(`[${advisoriesCsv}]`)
+  excludedAdvisories = parseConfigToJson(advisoriesCsv)
 }
 
 function isFlag(flags, ...strings) {
-  return strings.filter(s =>
-    !isNullOrEmpty(s) && flags.includes(s.trim().toLowerCase())
-  ).length > 0
+  return (
+    strings.filter(
+      (s) => !isNullOrEmpty(s) && flags.includes(s.trim().toLowerCase())
+    ).length > 0
+  )
 }
 
 function parseCommandLineArgs() {
@@ -567,8 +654,8 @@ function parseCommandLineArgs() {
     }
 
     if (isFlag(optionFlags.exclude, a) && !isNullOrEmpty(b)) {
-      if (isNumbersCsv(b)) {
-        excludedAdvisories = JSON.parse(`[${b}]`)
+      if (isValidConfigFormat(b)) {
+        excludedAdvisories = parseConfigToJson(b)
       } else {
         errorAndExit(`ERROR: Unable to parse --exclude option value: ${b}`)
       }
@@ -579,7 +666,9 @@ function parseCommandLineArgs() {
         minSeverityName = b.trim().toLowerCase()
         minSeverity = severityToIntMap[minSeverityName]
       } else {
-        errorAndExit(`ERROR: Unrecognised --min-severity option value: ${b.trim()}`)
+        errorAndExit(
+          `ERROR: Unrecognised --min-severity option value: ${b.trim()}`
+        )
       }
     }
 
@@ -587,14 +676,14 @@ function parseCommandLineArgs() {
       debugEnabled = true
     }
 
-    if (isFlag(optionFlags.retryNetworkIssues, a, b)) {  
+    if (isFlag(optionFlags.retryNetworkIssues, a, b)) {
       shouldRetryNetworkErrors = true
-    } 
-  
+    }
+
     if (isFlag(optionFlags.ignoreDevDependencies, a, b)) {
       ignoreDevDependencies = true
     }
-  
+
     if (isFlag(optionFlags.failOnMissingExclusions, a, b)) {
       failOnMissingAdvisoryExclusions = true
     }
@@ -617,21 +706,20 @@ async function main() {
   console.log(`Minimum severity level to report: ${minSeverityName}`)
 
   console.log(
-    excludedAdvisories.length > 0 ?
-      `Excluded Advisories: ${JSON.stringify(excludedAdvisories)}\n` :
-      ""
+    excludedAdvisories.length > 0
+      ? `Excluded Advisories: ${JSON.stringify(excludedAdvisories)}\n`
+      : ""
   )
 
-  try
-  {
-    let advisoryCount = await withTempFile(filePath => {
+  try {
+    let advisoryCount = await withTempFile((filePath) => {
       auditResultsFilePath = filePath
 
       logDebug(`Temporary file path: ${auditResultsFilePath}`)
 
       return runAuditReport()
     }, cleanupAuditResultsFile)
-    
+
     exit(advisoryCount)
   } catch (e) {
     console.error("Audit failed due to an error: \n")
