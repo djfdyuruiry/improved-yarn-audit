@@ -1,0 +1,636 @@
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>lighthouse>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: webpack>terser-webpack-plugin>cacache>ssri
+#  URL: https://github.com/advisories/GHSA-vx3p-948g-6vhq
+GHSA-vx3p-948g-6vhq
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @types/axios>axios, wait-on>axios, axios
+#  URL: https://github.com/advisories/GHSA-cph5-m8f7-6c5x
+GHSA-cph5-m8f7-6c5x
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @types/axios>axios, wait-on>axios, axios
+#  URL: https://github.com/advisories/GHSA-4w2v-q235-vp99
+GHSA-4w2v-q235-vp99
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @types/axios>axios, wait-on>axios, axios
+#  URL: https://github.com/advisories/GHSA-cph5-m8f7-6c5x
+GHSA-cph5-m8f7-6c5x
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @types/axios>axios, wait-on>axios, axios
+#  URL: https://github.com/advisories/GHSA-4w2v-q235-vp99
+GHSA-4w2v-q235-vp99
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: newrelic>@grpc/grpc-js
+#  URL: https://github.com/advisories/GHSA-pp75-xfpw-37g9
+GHSA-pp75-xfpw-37g9
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-5955-9wpr-37jh
+GHSA-5955-9wpr-37jh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-5955-9wpr-37jh
+GHSA-5955-9wpr-37jh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-5955-9wpr-37jh
+GHSA-5955-9wpr-37jh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-qq89-hq3f-393p
+GHSA-qq89-hq3f-393p
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-qq89-hq3f-393p
+GHSA-qq89-hq3f-393p
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-qq89-hq3f-393p
+GHSA-qq89-hq3f-393p
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-9r2w-394v-53qc
+GHSA-9r2w-394v-53qc
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-9r2w-394v-53qc
+GHSA-9r2w-394v-53qc
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-9r2w-394v-53qc
+GHSA-9r2w-394v-53qc
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-3jfq-g458-7qm9
+GHSA-3jfq-g458-7qm9
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-3jfq-g458-7qm9
+GHSA-3jfq-g458-7qm9
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-3jfq-g458-7qm9
+GHSA-3jfq-g458-7qm9
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-r628-mhmh-qjhw
+GHSA-r628-mhmh-qjhw
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-r628-mhmh-qjhw
+GHSA-r628-mhmh-qjhw
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>tar, terser-webpack-plugin>cacache>tar, favicons-webpack-plugin>favicons>sharp>tar
+#  URL: https://github.com/advisories/GHSA-r628-mhmh-qjhw
+GHSA-r628-mhmh-qjhw
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>update-notifier>latest-version>package-json>got>cacheable-request>normalize-url, nodemon>update-notifier>latest-version>package-json>got>cacheable-request>normalize-url
+#  URL: https://github.com/advisories/GHSA-px4h-xg32-q955
+GHSA-px4h-xg32-q955
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>update-notifier>latest-version>package-json>got>cacheable-request>normalize-url, nodemon>update-notifier>latest-version>package-json>got>cacheable-request>normalize-url
+#  URL: https://github.com/advisories/GHSA-px4h-xg32-q955
+GHSA-px4h-xg32-q955
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>meow>trim-newlines
+#  URL: https://github.com/advisories/GHSA-7p7h-4mm5-852v
+GHSA-7p7h-4mm5-852v
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>ssri, terser-webpack-plugin>cacache>ssri
+#  URL: https://github.com/advisories/GHSA-vx3p-948g-6vhq
+GHSA-vx3p-948g-6vhq
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: copy-webpack-plugin>cacache>ssri, terser-webpack-plugin>cacache>ssri
+#  URL: https://github.com/advisories/GHSA-vx3p-948g-6vhq
+GHSA-vx3p-948g-6vhq
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash, jest>jest-cli>@jest/core>jest-runner>jest-runtime>@jest/transform>@babel/core>@babel/generator>@babel/types>lodash
+#  URL: https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+GHSA-35jh-r3h4-6jhm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>lighthouse>jsonlint-mod>underscore
+#  URL: https://github.com/advisories/GHSA-cf4h-3jhx-xvhq
+GHSA-cf4h-3jhx-xvhq
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: concurrently>yargs>y18n, webpack-cli>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>jest-config>@jest/test-sequencer>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-runner>jest-runtime>yargs>y18n, jest>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>jest-cli>@jest/core>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n, jest>@jest/core>jest-runner>jest-config>@jest/test-sequencer>jest-runtime>yargs>y18n
+#  URL: https://github.com/advisories/GHSA-c4w7-xm78-47vh
+GHSA-c4w7-xm78-47vh
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: cypress>is-installed-globally>global-dirs>ini, lighthouse-ci>update-notifier>is-installed-globally>global-dirs>ini, nodemon>update-notifier>is-installed-globally>global-dirs>ini, favicons-webpack-plugin>favicons>sharp>prebuild-install>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>lighthouse>update-notifier>latest-version>package-json>registry-url>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-auth-token>rc>ini, lighthouse-ci>update-notifier>latest-version>package-json>registry-url>rc>ini, nodemon>update-notifier>latest-version>package-json>registry-url>rc>ini
+#  URL: https://github.com/advisories/GHSA-qqgx-2p2h-9c37
+GHSA-qqgx-2p2h-9c37
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>lighthouse>jsonld>rdf-canonize>node-forge
+#  URL: https://github.com/advisories/GHSA-92xj-mqp7-vmcj
+GHSA-92xj-mqp7-vmcj
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: favicons-webpack-plugin>favicons>sharp>prebuild-install>tar-fs>tar-stream>bl
+#  URL: https://github.com/advisories/GHSA-pp7h-53gx-mx7r
+GHSA-pp7h-53gx-mx7r
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>lighthouse>configstore>dot-prop, lighthouse-ci>lighthouse>update-notifier>configstore>dot-prop
+#  URL: https://github.com/advisories/GHSA-ff7x-qrg7-qggm
+GHSA-ff7x-qrg7-qggm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: lighthouse-ci>lighthouse>configstore>dot-prop, lighthouse-ci>lighthouse>update-notifier>configstore>dot-prop
+#  URL: https://github.com/advisories/GHSA-ff7x-qrg7-qggm
+GHSA-ff7x-qrg7-qggm
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, webpack>watchpack>watchpack-chokidar2>chokidar>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, @cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value, jest>jest-cli>@jest/core>@jest/reporters>@jest/transform>jest-haste-map>sane>anymatch>micromatch>braces>snapdragon>base>cache-base>set-value
+#  URL: https://github.com/advisories/GHSA-4jqc-8m5r-9rpr
+GHSA-4jqc-8m5r-9rpr
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @types/axios>axios, wait-on>axios, axios
+#  URL: https://github.com/advisories/GHSA-cph5-m8f7-6c5x
+GHSA-cph5-m8f7-6c5x
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @types/axios>axios, wait-on>axios, axios
+#  URL: https://github.com/advisories/GHSA-4w2v-q235-vp99
+GHSA-4w2v-q235-vp99
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: @cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>babel-plugin-add-module-exports>chokidar>glob-parent, @cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>@cypress/browserify-preprocessor>watchify>chokidar>glob-parent, cypress-cucumber-preprocessor>chokidar>glob-parent, webpack>watchpack>watchpack-chokidar2>chokidar>glob-parent, copy-webpack-plugin>fast-glob>glob-parent, copy-webpack-plugin>globby>fast-glob>glob-parent, copy-webpack-plugin>glob-parent, eslint>glob-parent, nodemon>chokidar>glob-parent, webpack>watchpack>chokidar>glob-parent, postcss-mixins>globby>fast-glob>glob-parent
+#  URL: https://github.com/advisories/GHSA-ww39-953v-wcq6
+GHSA-ww39-953v-wcq6
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: sonarqube-scanner>download>decompress>decompress-tar>tar-stream>bl, sonarqube-scanner>download>decompress>decompress-tarbz2>decompress-tar>tar-stream>bl, sonarqube-scanner>download>decompress>decompress-targz>decompress-tar>tar-stream>bl
+#  URL: https://github.com/advisories/GHSA-pp7h-53gx-mx7r
+GHSA-pp7h-53gx-mx7r
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: sonarqube-scanner>download>decompress>decompress-tar>tar-stream>bl, sonarqube-scanner>download>decompress>decompress-tarbz2>decompress-tar>tar-stream>bl, sonarqube-scanner>download>decompress>decompress-targz>decompress-tar>tar-stream>bl
+#  URL: https://github.com/advisories/GHSA-pp7h-53gx-mx7r
+GHSA-pp7h-53gx-mx7r
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: sonarqube-scanner>download>decompress>decompress-tar>tar-stream>bl, sonarqube-scanner>download>decompress>decompress-tarbz2>decompress-tar>tar-stream>bl, sonarqube-scanner>download>decompress>decompress-targz>decompress-tar>tar-stream>bl
+#  URL: https://github.com/advisories/GHSA-pp7h-53gx-mx7r
+GHSA-pp7h-53gx-mx7r
+
+# Vulnerability Found:
+#
+#  Severity: HIGH
+#  Modules: favicons-webpack-plugin>favicons>to-ico>resize-img>jimp>url-regex
+#  URL: https://github.com/advisories/GHSA-v4rh-8p82-6h5w
+GHSA-v4rh-8p82-6h5w
