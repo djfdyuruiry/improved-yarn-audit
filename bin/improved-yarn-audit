@@ -532,11 +532,9 @@ function errorAndExit(msg) {
 }
 
 function parseJSONSafeExcludeList(str) {
-  console.log("parseJSONSafeExcludeList 1")
-  const returnVal = str
+  return str
     .split(",")
     .map((option) => {
-      console.log("parseJSONSafeExcludeList 2")
       if (option.startsWith(GITHUB_ADVISORY_CODE)) {
         return `"${option}"`
       }
@@ -545,32 +543,19 @@ function parseJSONSafeExcludeList(str) {
     })
     .filter((str) => str)
     .join(",")
-
-  console.log("parseJSONSafeExcludeList 3")
-
-  return returnVal
 }
 
 function parseConfigToJson(str) {
-  console.log("parseConfigToJson 1")
   const jsonSafeString = parseJSONSafeExcludeList(str)
-  console.log("parseConfigToJson 2 jsonSafeString", jsonSafeString)
 
   return JSON.parse(`[${jsonSafeString}]`)
 }
 
 function isValidConfigFormat(str) {
   try {
-    console.log("isValidConfigFormat", str)
     const testExcludeList = parseConfigToJson(str)
-    console.log("isValidConfigFormat stage 1", testExcludeList)
-    console.log(
-      "isValidConfigFormat stage 1",
-      typeof testExcludeList === typeof []
-    )
 
     testExcludeList.forEach((excludeOption) => {
-      console.log("isValidConfigFormat stage 2", excludeOption)
       if (
         parseInt(excludeOption) === NaN &&
         !excludeOption.startsWith(GITHUB_ADVISORY_CODE)
@@ -578,7 +563,6 @@ function isValidConfigFormat(str) {
         throw "Invalid format"
       }
     })
-    console.log("isValidConfigFormat stage 3")
 
     return true
   } catch {
