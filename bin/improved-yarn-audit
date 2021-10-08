@@ -84,7 +84,9 @@ async function logDebug(strOrFunc) {
 
 function checkForMissingExclusions(allAdvisories) {
   const missingExcludedAdvisories = excludedAdvisories.filter(
-    (ea) => allAdvisories.find((a) => a.id === ea) === undefined
+    (ea) =>
+      allAdvisories.find((a) => a.id === ea || a.github_advisory_id === ea) ===
+      undefined
   )
 
   if (missingExcludedAdvisories.length < 1) {
