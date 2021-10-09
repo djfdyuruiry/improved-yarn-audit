@@ -49,7 +49,7 @@ Often dev dependencies can become outdated and the package maintainer no longer 
 To remedy this, you can pass a csv list of advisory IDs to ignore.
 
 ```
-yarn run improved-yarn-audit --exclude 253,456,811
+yarn run improved-yarn-audit --exclude GHSA-f9cm-p3w6-xvr3,GHSA-cph5-m8f7-6c5x,GHSA-gpvr-g6gh-9mc2
 ```
 
 ## .iyarc File
@@ -66,10 +66,11 @@ Example `.iyarc` file:
 34
 
 # This one doesn't affect us
-1435
+GHSA-3fw8-66wf-pr7m
 
 # We can also ignore all these, as a comma separated list
 46,53,124
+GHSA-f9cm-p3w6-xvr3,GHSA-cph5-m8f7-6c5x,GHSA-gpvr-g6gh-9mc2
 ```
 
 **Note: if you pass in exclusions using the command line, these will override the `.iyarc` file**
