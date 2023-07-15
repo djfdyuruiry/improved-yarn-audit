@@ -606,7 +606,7 @@ function toJson(value) {
 }
 
 function printVersionAndExit() {
-  errorAndExit(packageInfo.version)
+  errorAndExit(packageInfo.version, 0)
 }
 
 function printUsageAndExit() {
@@ -626,12 +626,12 @@ Options:
 
 The CSV list of advisory ID's can also be provided in a '.iyarc' file in the current working directory. This file also supports
 comments, lines beginning with a '#' character are ignored.
-`)
+`, 0)
 }
 
-function errorAndExit(msg) {
+function errorAndExit(msg, code = 1) {
   console.error(msg)
-  process.exit(1)
+  process.exit(code)
 }
 
 function parseJSONSafeExcludeList(str) {
