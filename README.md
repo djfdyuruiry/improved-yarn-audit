@@ -13,7 +13,9 @@ GitHub Repo: https://github.com/djfdyuruiry/improved-yarn-audit
 Currently `yarn audit` has several issues making it difficult to use in a CI pipeline:
 
 - No way to ignore advisories
+  - *Yarn v1.x only*
 - Unable to filter out low severity issues
+  - *Yarn v1.x exit code issue*
 - Ongoing network issues with NPM registry cause false positives
 
 `improved-yarn-audit` provides a wrapper around the `yarn audit` command which addresses all of the above problems.
