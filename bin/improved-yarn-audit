@@ -7,7 +7,7 @@ const {
   createWriteStream,
   mkdtempSync,
   readFileSync,
-  rmdirSync,
+  rmSync,
   statSync,
   unlinkSync
 } = require("fs")
@@ -141,11 +141,14 @@ function buildAdvisoryReport(
 }
 
 function printAuditReport(
-  filteredAuditAdvisories,
-  devDependencyAdvisories,
-  devDependencyAdvisoryIds,
-  severityIgnoredAuditAdvisories,
-  excludedAuditAdvisories
+  {
+    filteredAuditAdvisories,
+    devDependencyAdvisories,
+    devDependencyAdvisoryIds,
+    severityIgnoredAuditAdvisories,
+    excludedAuditAdvisories
+  },
+  yarnMajorVersion
 ) {
   logDebug(() => `Dev audit advisories:\n${toJson(devDependencyAdvisories)}\n`)
   logDebug(
@@ -188,7 +191,7 @@ function printAuditReport(
     console.log()
   }
 
-  console.log("Run `yarn audit` for more information")
+  console.log(`Run 'yarn${yarnMajorVersion === 3 ? " npm " : " "}audit' for more information`)
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -223,18 +226,34 @@ async function getAuditSummary() {
   return auditSummary
 }
 
-async function handleAuditNetworkError(output) {
+async function handleAuditNetworkError(invokeYarnAuditFunc) {
   const error = "ERROR: Network error occurred when querying audit registry"
 
   if (!shouldRetryNetworkErrors) {
-    errorAndExit(`${error}\n\n${output}`)
+    errorAndExit(`${error}\n\n${await dumpAuditResultsAsString()}`)
   }
 
   console.error(`${error}, retrying...\n`)
 
   await sleep(1000)
 
-  return await runYarnAudit()
+  return await runYarnAudit(invokeYarnAuditFunc)
+}
+
+async function networkErrorHasOccurred() {
+  let networkErrorHasOccurred = false
+
+  if (existsSync(auditResultsFilePath)) {
+    await iterateOverAuditResults(
+      (a) =>
+        (networkErrorHasOccurred =
+          networkErrorHasOccurred || a.includes("Error: Request failed "))
+    )
+  }
+
+  logDebug(`networkErrorHasOccurred: ${networkErrorHasOccurred}`)
+
+  return networkErrorHasOccurred
 }
 
 async function dumpAuditResultsAsString() {
@@ -285,6 +304,51 @@ async function cleanupAuditResultsFile() {
   unlinkSync(auditResultsFilePath)
 }
 
+async function processAuditResult(
+  result,
+  {
+    allAdvisories,
+    filteredAuditAdvisories,
+    devDependencyAdvisories,
+    devDependencyAdvisoryIds,
+    severityIgnoredAuditAdvisories,
+    excludedAuditAdvisories
+  },
+  devDependenciesRegex
+) {
+  allAdvisories.push(result)
+
+  if (devDependenciesRegex) {
+    const isDevDependencyAdvisory = flatMap(
+      result.findings,
+      (f) => f.paths
+    ).every((d) => d.match(devDependenciesRegex))
+
+    if (isDevDependencyAdvisory) {
+      devDependencyAdvisories = devDependencyAdvisories.concat(result)
+      devDependencyAdvisoryIds = devDependencyAdvisories.concat(
+        devDependencyAdvisories.map((d) => d.id)
+      )
+    }
+  }
+
+  if (isNonExcludedAdvisory(result, devDependencyAdvisoryIds)) {
+    filteredAuditAdvisories.push(result)
+  }
+
+  if (
+    (excludedAdvisories.includes(result.id) ||
+      excludedAdvisories.includes(result.github_advisory_id)) &&
+    !severityShouldBeIgnored(result.severity)
+  ) {
+    excludedAuditAdvisories.push(result)
+  }
+
+  if (severityShouldBeIgnored(result.severity)) {
+    severityIgnoredAuditAdvisories.push(result)
+  }
+}
+
 async function executeYarn(params, outputStream) {
   const yarnProcess = spawn(yarnCommand, params, {
     env,
@@ -304,7 +368,31 @@ async function executeYarn(params, outputStream) {
   return exitCode
 }
 
-async function invokeYarnAudit() {
+async function invokeYarnAuditV3() {
+  const auditParams = ["npm", "audit", "--json", `--severity=${minSeverityName}`]
+
+  if (ignoreDevDependencies) {
+    auditParams.push("--environment=production")
+  }
+
+  cleanupAuditResultsFile()
+
+  const auditResultsFileStream = getAuditResultsFileStream("w")
+  const exitCode = await new Promise((resolve) =>
+    auditResultsFileStream.on("open", async () => {
+      let exitCode = await executeYarn(
+        auditParams,
+        auditResultsFileStream
+      )
+
+      resolve(exitCode)
+    })
+  )
+
+  return exitCode
+}
+
+async function invokeYarnAuditV1() {
   const auditParams = ["audit", "--json", `--level=${minSeverityName}`]
 
   if (ignoreDevDependencies) {
@@ -328,25 +416,13 @@ async function invokeYarnAudit() {
   return exitCode
 }
 
-async function runYarnAudit() {
+async function runYarnAudit(invokeYarnAuditFunc) {
   console.log("Running yarn audit...\n")
 
-  const exitCode = await invokeYarnAudit()
+  const exitCode = await invokeYarnAuditFunc()
 
-  let networkErrorHasOccurred = false
-
-  if (existsSync(auditResultsFilePath)) {
-    await iterateOverAuditResults(
-      (a) =>
-        (networkErrorHasOccurred =
-          networkErrorHasOccurred || a.includes("Error: Request failed "))
-    )
-  }
-
-  logDebug(`networkErrorHasOccurred: ${networkErrorHasOccurred}`)
-
-  if (networkErrorHasOccurred) {
-    return await handleAuditNetworkError()
+  if (await networkErrorHasOccurred()) {
+    return await handleAuditNetworkError(invokeYarnAuditFunc)
   }
 
   if (exitCode === 1) {
@@ -354,6 +430,49 @@ async function runYarnAudit() {
       `ERROR: Yarn audit error:\n${await dumpAuditResultsAsString()}`
     )
   }
+}
+
+async function runAuditReportV3(auditReportSink, devDependenciesRegex) {
+  logDebug("executing runAuditReportV3()")
+
+  await runYarnAudit(invokeYarnAuditV3)
+
+  const yarnAuditReport = JSON.parse(readFileSync(auditResultsFilePath).toString())
+  const auditSummaryJson = toJson(yarnAuditReport.metadata)
+
+  logDebug(`Audit summary:\n${auditSummaryJson}\n`)
+
+  for (const [_, result] of Object.entries(yarnAuditReport.advisories)) {
+    await processAuditResult(result, auditReportSink, devDependenciesRegex)
+  }
+}
+
+async function runAuditReportV1(auditReportSink, devDependenciesRegex) {
+  logDebug("executing runAuditReportV1()")
+
+  await runYarnAudit(invokeYarnAuditV1)
+
+  logDebug(async () => {
+    let auditSummaryJson = await getAuditSummary()
+    let auditSummary = toJson(JSON.parse(auditSummaryJson))
+
+    return `Audit summary:\n${auditSummary}\n`
+  })
+
+  await iterateOverAuditResults(async (resultJson) => {
+    const potentialResult = parseAuditJson(resultJson)
+
+    if (
+      typeof potentialResult.type !== "string" ||
+      potentialResult.type !== "auditAdvisory"
+    ) {
+      return
+    }
+
+    const result = potentialResult.data.advisory
+
+    await processAuditResult(result, auditReportSink, devDependenciesRegex)
+  })
 }
 
 function getDevDependenciesRegex() {
@@ -399,90 +518,27 @@ function getDevDependenciesRegex() {
   return new RegExp(devDependenciesRegex)
 }
 
-async function runAuditReportV3() {
-  logDebug("executing runAuditReportV3()")
-
-  errorAndExit("NOT IMPLEMENTED")
-}
-
-async function runAuditReportV1() {
-  logDebug("executing runAuditReportV1()")
-
+async function runAuditReport(yarnMajorVersion) {
+  const auditReportSink = {
+    allAdvisories: [],
+    filteredAuditAdvisories: [],
+    severityIgnoredAuditAdvisories: [],
+    excludedAuditAdvisories: [],
+    devDependencyAdvisories: [],
+    devDependencyAdvisoryIds: []
+  }
   const devDependenciesRegex = getDevDependenciesRegex()
 
-  await runYarnAudit()
-
-  logDebug(async () => {
-    let auditSummaryJson = await getAuditSummary()
-    let auditSummary = toJson(JSON.parse(auditSummaryJson))
-
-    return `Audit summary:\n${auditSummary}\n`
-  })
-
-  const allAdvisories = []
-  const filteredAuditAdvisories = []
-  const severityIgnoredAuditAdvisories = []
-  const excludedAuditAdvisories = []
-
-  let devDependencyAdvisories = []
-  let devDependencyAdvisoryIds = []
-
-  await iterateOverAuditResults((resultJson) => {
-    const potentialResult = parseAuditJson(resultJson)
-
-    if (
-      typeof potentialResult.type !== "string" ||
-      potentialResult.type !== "auditAdvisory"
-    ) {
-      return
-    }
-
-    const result = potentialResult.data.advisory
-
-    allAdvisories.push(result)
-
-    if (devDependenciesRegex) {
-      const isDevDependencyAdvisory = flatMap(
-        result.findings,
-        (f) => f.paths
-      ).every((d) => d.match(devDependenciesRegex))
-
-      if (isDevDependencyAdvisory) {
-        devDependencyAdvisories = devDependencyAdvisories.concat(result)
-        devDependencyAdvisoryIds = devDependencyAdvisories.concat(
-          devDependencyAdvisories.map((d) => d.id)
-        )
-      }
-    }
-
-    if (isNonExcludedAdvisory(result, devDependencyAdvisoryIds)) {
-      filteredAuditAdvisories.push(result)
-    }
-
-    if (
-      (excludedAdvisories.includes(result.id) ||
-        excludedAdvisories.includes(result.github_advisory_id)) &&
-      !severityShouldBeIgnored(result.severity)
-    ) {
-      excludedAuditAdvisories.push(result)
-    }
-
-    if (severityShouldBeIgnored(result.severity)) {
-      severityIgnoredAuditAdvisories.push(result)
-    }
-  })
-
-  printAuditReport(
-    filteredAuditAdvisories,
-    devDependencyAdvisories,
-    devDependencyAdvisoryIds,
-    severityIgnoredAuditAdvisories,
-    excludedAuditAdvisories
+  await (yarnMajorVersion === 1
+    ? runAuditReportV1(auditReportSink, devDependenciesRegex)
+    : runAuditReportV3(auditReportSink, devDependenciesRegex)
   )
 
-  checkForMissingExclusions(allAdvisories)
+  printAuditReport(auditReportSink, yarnMajorVersion)
 
-  return filteredAuditAdvisories.length
+  checkForMissingExclusions(auditReportSink.allAdvisories)
+
+  return auditReportSink.filteredAuditAdvisories.length
 }
 
 async function withTempDir(action, cleanupAction) {
@@ -496,7 +552,7 @@ async function withTempDir(action, cleanupAction) {
       cleanupAction()
     }
 
-    rmdirSync(tempDirPath, { recursive: true })
+    rmSync(tempDirPath, { recursive: true })
   }
 }
 
@@ -751,14 +807,10 @@ async function main() {
   )
 
   try {
-    let advisoryCount = await withTempFile(async (filePath) => {
+    const advisoryCount = await withTempFile(async (filePath) => {
       auditResultsFilePath = filePath
 
-      return await(
-        yarnMajorVersion === 1 
-          ? runAuditReportV1() 
-          : runAuditReportV3()
-      )
+      return await runAuditReport(yarnMajorVersion)
     }, cleanupAuditResultsFile)
 
     exit(advisoryCount)

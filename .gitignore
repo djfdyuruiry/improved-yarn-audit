@@ -4,3 +4,7 @@ node_modules
 
 test/package.json
 test/yarn.lock
+test/.yarnrc.yml
+
+.yarn
+

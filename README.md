@@ -2,6 +2,8 @@
 
 This project aims to improve upon the existing Yarn package manager audit functionality.
 
+**Supports Yarn v1.x and Yarn v3.x**
+
 GitHub Repo: https://github.com/djfdyuruiry/improved-yarn-audit
 
 [![NPM](https://nodei.co/npm/improved-yarn-audit.png)](https://nodei.co/npm/improved-yarn-audit/)
@@ -97,7 +99,7 @@ yarn run improved-yarn-audit --ignore-dev-deps
 
 ## Retrying Network Issues
 
-As of April 2019 there are outstanding network issues with the NPM registry audit API, which cause frequent request failues. To work around this until a fix is implemented you can pass a flag to retry any failed requests.
+As of April 2019 there are outstanding network issues with the NPM registry audit API, which cause frequent request failures. To work around this until a fix is implemented you can pass a flag to retry any failed requests.
 
 ```
 yarn run improved-yarn-audit --retry-on-network-failure
