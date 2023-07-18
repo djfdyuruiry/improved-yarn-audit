@@ -40,7 +40,7 @@ runTests() {
 
   # test 1
   callIya
-  testExitCode "not excluded" "9" "$?"
+  testExitCode "not excluded" "12" "$?"
 
   # test 2
   excludedAdvisories=$(<mocks/test-2.args)
@@ -64,33 +64,33 @@ runTests() {
   rm -f .iyarc
   touch .iyarc
   cp mocks/test-5.iyarc .iyarc
-  callIya -e 1469,1594,GHSA-3fw8-66wf-pr7m,GHSA-42xw-2xvc-qx8m
-  testExitCode "vulnerabilities are present and they are excluded in .iyarc but exclusions are in the command line" "7" "$?"
+  callIya -e GHSA-3fw8-66wf-pr7m,GHSA-42xw-2xvc-qx8m,GHSA-f9cm-p3w6-xvr3,GHSA-gpvr-g6gh-9mc2
+  testExitCode "vulnerabilities are present and they are excluded in .iyarc but exclusions are in the command line" "8" "$?"
 
   # test 6
   rm -f .iyarc
   touch .iyarc
   cp mocks/test-6.iyarc .iyarc
   callIya -i
-  testExitCode "dev dependencies flag is present then dev vulnerabilities are ignored" "6" "$?"
+  testExitCode "dev dependencies flag is present then dev vulnerabilities are ignored" "9" "$?"
 
   # test 7
   callIya -s moderate
-  testExitCode "min severity is moderate" "8" "$?"
+  testExitCode "min severity is moderate" "11" "$?"
 
   # test 8
   callIya -s high
-  testExitCode "min severity is high" "6" "$?"
+  testExitCode "min severity is high" "7" "$?"
 
   # test 9
   # Moderate values = GHSA-gpvr-g6gh-9mc2,GHSA-wrvr-8mpx-r7pp
   # High Severity values = GHSA-jjv7-qpx3-h62q,GHSA-f9cm-p3w6-xvr3,GHSA-gqgv-6jq5-jjj9,GHSA-42xw-2xvc-qx8m,GHSA-4w2v-q235-vp99,GHSA-cph5-m8f7-6c5x
-  callIya -s moderate -e GHSA-gpvr-g6gh-9mc2,GHSA-wrvr-8mpx-r7pp,GHSA-jjv7-qpx3-h62q,GHSA-f9cm-p3w6-xvr3,GHSA-gqgv-6jq5-jjj9,GHSA-42xw-2xvc-qx8m,GHSA-4w2v-q235-vp99,GHSA-cph5-m8f7-6c5x
+  callIya -s moderate -e GHSA-gpvr-g6gh-9mc2,GHSA-wrvr-8mpx-r7pp,GHSA-jjv7-qpx3-h62q,GHSA-f9cm-p3w6-xvr3,GHSA-gqgv-6jq5-jjj9,GHSA-42xw-2xvc-qx8m,GHSA-cph5-m8f7-6c5x,GHSA-hrpp-h998-j3pp,GHSA-rch9-xh7r-mqgw,GHSA-4w2v-q235-vp99
   testExitCode "they are excluded on the command line and min severity is moderate" "0" "$?"
 
   # test 10
   # High Severity values = GHSA-jjv7-qpx3-h62q,GHSA-f9cm-p3w6-xvr3,GHSA-gqgv-6jq5-jjj9,GHSA-42xw-2xvc-qx8m,GHSA-4w2v-q235-vp99,GHSA-cph5-m8f7-6c5x
-  callIya -s high -e GHSA-jjv7-qpx3-h62q,GHSA-f9cm-p3w6-xvr3,GHSA-gqgv-6jq5-jjj9,GHSA-42xw-2xvc-qx8m,GHSA-4w2v-q235-vp99,GHSA-cph5-m8f7-6c5x
+  callIya -s high -e GHSA-jjv7-qpx3-h62q,GHSA-f9cm-p3w6-xvr3,GHSA-gqgv-6jq5-jjj9,GHSA-42xw-2xvc-qx8m,GHSA-cph5-m8f7-6c5x,GHSA-hrpp-h998-j3pp
   testExitCode "they are excluded on the command line and min severity is high" "0" "$?"
 
   # test 11
@@ -168,14 +168,14 @@ runTests() {
 
   # test 20
   callIya -d
-  testExitCode "--debug is passed" "9" "$?"
+  testExitCode "--debug is passed" "12 " "$?"
 
   # test 21
   rm -f .iyarc
   touch .iyarc
   cp mocks/test-21.iyarc .iyarc
   callIya
-  testExitCode ".iyarc contains no exclusions" "9" "$?"
+  testExitCode ".iyarc contains no exclusions" "12" "$?"
 }
 
 runTests

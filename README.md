@@ -13,7 +13,7 @@ GitHub Repo: https://github.com/djfdyuruiry/improved-yarn-audit
 Currently `yarn audit` has several issues making it difficult to use in a CI pipeline:
 
 - No way to ignore advisories
-  - *Yarn v1.x only*
+  - *Yarn v1.x issue only*
 - Unable to filter out low severity issues
   - *Yarn v1.x exit code issue*
 - Ongoing network issues with NPM registry cause false positives
@@ -98,6 +98,13 @@ If you want to ignore any advisories from dev dependencies, you can use the `--i
 ```
 yarn run improved-yarn-audit --ignore-dev-deps
 ```
+
+## Yarn v3.x Flags
+
+Options are available for Yarn v3.x only that allow you to take advantage of the new audit options in v3.x.
+
+- Ignore vulnerabilities in transitive dependencies: `--ignore-transitive-deps, -t`
+- Audit all workspaces: `--all-workspaces, -a`
 
 ## Retrying Network Issues
 

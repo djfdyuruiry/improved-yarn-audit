@@ -30,6 +30,8 @@ const optionFlags = {
   retryNetworkIssues: ["--retry-on-network-failure", "-r"],
   ignoreDevDependencies: ["--ignore-dev-deps", "-i"],
   failOnMissingExclusions: ["--fail-on-missing-exclusions", "-f"],
+  ignoreTransitiveDeps: ["--ignore-transitive-deps", "-t"],
+  auditAllWorkspaces: ["--all-workspaces", "-a"],
   debug: ["--debug", "-d"],
   version: ["--version", "-v"],
   help: ["--help", "-h"]
@@ -52,6 +54,8 @@ let minSeverity = severityToIntMap[minSeverityName]
 let excludedAdvisories = []
 let ignoreDevDependencies = false
 let failOnMissingAdvisoryExclusions = false
+let ignoreTransitiveDeps = false
+let auditAllWorkspaces = false
 let debugEnabled = false
 let shouldRetryNetworkErrors = false
 let auditResultsFilePath = "/dev/null"
@@ -350,6 +354,8 @@ async function processAuditResult(
 }
 
 async function executeYarn(params, outputStream) {
+  logDebug(() => `Executing yarn with params:\n${toJson(params)}`)
+
   const yarnProcess = spawn(yarnCommand, params, {
     env,
     stdio: ["pipe", outputStream, outputStream]
@@ -373,6 +379,18 @@ async function invokeYarnAuditV3() {
 
   if (ignoreDevDependencies) {
     auditParams.push("--environment=production")
+  }
+
+  if (!ignoreTransitiveDeps) {
+    auditParams.push("--recursive")
+  }
+
+  if (auditAllWorkspaces) {
+    auditParams.push("--all")
+  }
+
+  for (const excludedAdvisory of excludedAdvisories) {
+    auditParams.push("--exclude", excludedAdvisory)
   }
 
   cleanupAuditResultsFile()
@@ -438,9 +456,8 @@ async function runAuditReportV3(auditReportSink, devDependenciesRegex) {
   await runYarnAudit(invokeYarnAuditV3)
 
   const yarnAuditReport = JSON.parse(readFileSync(auditResultsFilePath).toString())
-  const auditSummaryJson = toJson(yarnAuditReport.metadata)
 
-  logDebug(`Audit summary:\n${auditSummaryJson}\n`)
+  logDebug(() => `Audit summary:\n${toJson(yarnAuditReport.metadata)}\n`)
 
   for (const [_, result] of Object.entries(yarnAuditReport.advisories)) {
     await processAuditResult(result, auditReportSink, devDependenciesRegex)
@@ -606,7 +623,7 @@ function toJson(value) {
 }
 
 function printVersionAndExit() {
-  errorAndExit(packageInfo.version, 0)
+  errorAndExit(packageInfo.version, 1)
 }
 
 function printUsageAndExit() {
@@ -620,13 +637,15 @@ Options:
   --retry-on-network-failure, -r      Retry audit if NPM registry throws a network error
   --ignore-dev-deps, -i               Ignore advisories for dev dependencies
   --fail-on-missing-exclusions, -f    Return a non-zero exit code when advisory exclusions are no longer detected by yarn audit
+  --ignore-transitive-deps, -t        Ignore vulnerabilities in transitive dependencies (Yarn v3.x only)
+  --all-workspaces, -a                Audit all workspaces (Yarn v3.x only)
   --debug, -d                         Print out raw audit report's and advisory details
   --version, -v                       Print version info and exit
   --help, -h                          Show this information
 
 The CSV list of advisory ID's can also be provided in a '.iyarc' file in the current working directory. This file also supports
 comments, lines beginning with a '#' character are ignored.
-`, 0)
+`, 1)
 }
 
 function errorAndExit(msg, code = 1) {
@@ -775,6 +794,14 @@ function parseCommandLineArgs() {
       failOnMissingAdvisoryExclusions = true
     }
 
+    if (isFlag(optionFlags.ignoreTransitiveDeps, a, b)) {
+      ignoreTransitiveDeps = true
+    }
+  
+    if (isFlag(optionFlags.auditAllWorkspaces, a, b)) {
+      auditAllWorkspaces = true
+    }
+  
     return b
   }, "")
 }
