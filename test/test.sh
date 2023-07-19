@@ -29,48 +29,53 @@ callIya() {
 }
 
 runTests() {
-  cd "${scriptPath}"
+  cd "/tmp"
+  rm -rf /tmp/* &> /dev/null || :
 
   rm -f package.json
   rm -f yarn.lock
+  rm -rf .yarn
+  rm -rf node_modules
   rm -f .iyarc
 
-  cp vunerable-package.json package.json
-  cp vunerable-yarn.lock yarn.lock
+  cp "${scriptPath}/vunerable-package.json" package.json
+  cp "${scriptPath}/vunerable-yarn.lock" yarn.lock
+
+  yarn install
 
   # test 1
   callIya
   testExitCode "not excluded" "12" "$?"
 
   # test 2
-  excludedAdvisories=$(<mocks/test-2.args)
+  excludedAdvisories=$(<${scriptPath}/mocks/test-2.args)
   callIya -e "${excludedAdvisories}"
   testExitCode "vulnerabilities are present and they are excluded on the command line" "0" "$?"
 
   # test 3
   touch .iyarc
-  cp mocks/test-3.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-3.iyarc .iyarc
   callIya
   testExitCode "vulnerabilities are present and they are excluded in .iyarc" "0" "$?"
   rm .iyarc
 
   # test 4
   touch .iyarc
-  cp mocks/test-4.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-4.iyarc .iyarc
   callIya
   testExitCode "they are excluded in .iyarc file with comments" "0" "$?"
 
   # test 5
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-5.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-5.iyarc .iyarc
   callIya -e GHSA-3fw8-66wf-pr7m,GHSA-42xw-2xvc-qx8m,GHSA-f9cm-p3w6-xvr3,GHSA-gpvr-g6gh-9mc2
   testExitCode "vulnerabilities are present and they are excluded in .iyarc but exclusions are in the command line" "8" "$?"
 
   # test 6
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-6.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-6.iyarc .iyarc
   callIya -i
   testExitCode "dev dependencies flag is present then dev vulnerabilities are ignored" "9" "$?"
 
@@ -96,58 +101,66 @@ runTests() {
   # test 11
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-11.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-11.iyarc .iyarc
   callIya -s moderate
   testExitCode "they are excluded in .iyarc and min severity is moderate" "0" "$?"
 
   # test 12
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-12.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-12.iyarc .iyarc
   callIya -s high
   testExitCode "they are excluded in .iyarc and min severity is high" "0" "$?"
 
   # test 13
   rm -f package.json
   rm -f yarn.lock
+  rm -rf .yarn
+  rm -rf node_modules
 
-  cp huge-package.json package.json
-  cp huge-yarn.lock yarn.lock
+  cp "${scriptPath}/huge-package.json" package.json
+  cp "${scriptPath}/huge-yarn.lock" yarn.lock
+
+  yarn install
 
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-13.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-13.iyarc .iyarc
   callIya -s high
   testExitCode "the package JSON has a large number of dependencies" "0" "$?"
 
   rm -f package.json
   rm -f yarn.lock
+  rm -rf .yarn
+  rm -rf node_modules
 
-  cp vunerable-package.json package.json
-  cp vunerable-yarn.lock yarn.lock
+  cp ${scriptPath}/vunerable-package.json package.json
+  cp ${scriptPath}/vunerable-yarn.lock yarn.lock
+
+  yarn install
 
   # test 14
-  excludedAdvisories=$(<mocks/test-14.args)
+  excludedAdvisories=$(<${scriptPath}/mocks/test-14.args)
   callIya -e "${excludedAdvisories},9999,1234"
   testExitCode "some of the exclusions passed via cli are missing" "0" "$?"
 
   # test 15
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-15.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-15.iyarc .iyarc
   callIya
   testExitCode "some of the exclusions passed via .iyarc are missing" "0" "$?"
 
   # test 16
   rm -f .iyarc
-  excludedAdvisories=$(<mocks/test-16.args)
+  excludedAdvisories=$(<${scriptPath}/mocks/test-16.args)
   callIya -e "${excludedAdvisories}" -f
   testExitCode "some of the exclusions passed via cli are missing and --fail-on-missing-exclusions is passed" "2" "$?"
 
   # test 17
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-17.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-17.iyarc .iyarc
   callIya -f
   testExitCode "some of the exclusions passed via .iyarc are missing and --fail-on-missing-exclusions is passed" "1" "$?"
 
@@ -173,7 +186,7 @@ runTests() {
   # test 21
   rm -f .iyarc
   touch .iyarc
-  cp mocks/test-21.iyarc .iyarc
+  cp ${scriptPath}/mocks/test-21.iyarc .iyarc
   callIya
   testExitCode ".iyarc contains no exclusions" "12" "$?"
 }
