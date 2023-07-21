@@ -124,30 +124,24 @@ function checkForMissingExclusions(allAdvisories) {
   }
 }
 
-function buildAdvisoryReport(
+function reportIgnoredAdvisories(
   devDependencyAdvisoryIds,
   severityIgnoredAuditAdvisories,
   excludedAuditAdvisories
 ) {
-  let filteredAdvisoryReport = ""
-
   if (ignoreDevDependencies && devDependencyAdvisoryIds.length > 0) {
-    filteredAdvisoryReport +=
-      `${devDependencyAdvisoryIds.length} ignored because ` +
-      `they are dev dependencies\n`
+    console.warn(`${devDependencyAdvisoryIds.length} ignored because ` +
+      `they are dev dependencies\n`)
   }
 
   if (severityIgnoredAuditAdvisories.length > 0) {
-    filteredAdvisoryReport +=
-      `${severityIgnoredAuditAdvisories.length} ignored because ` +
-      `severity was lower than "${minSeverityName}"\n`
+    console.warn(`${severityIgnoredAuditAdvisories.length} ignored because ` +
+      `severity was lower than "${minSeverityName}"\n`)
   }
 
   if (excludedAuditAdvisories.length > 0) {
-    filteredAdvisoryReport += `${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
+    console.warn(`${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`)
   }
-
-  return filteredAdvisoryReport
 }
 
 async function createReport(
@@ -169,36 +163,23 @@ async function createReport(
   )
 
   console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n`)
-
-  if (outputFormat == "json") {
-    return await createJsonReport(filteredAuditAdvisories,
-      devDependencyAdvisoryIds,
-      severityIgnoredAuditAdvisories,
-      excludedAuditAdvisories)
-  } else {
-    return await createTextReport(filteredAuditAdvisories,
-      devDependencyAdvisoryIds,
-      severityIgnoredAuditAdvisories,
-      excludedAuditAdvisories)
-  }
-}
-
-async function createTextReport(
-  filteredAuditAdvisories,
-  devDependencyAdvisoryIds,
-  severityIgnoredAuditAdvisories,
-  excludedAuditAdvisories) {
-    
-  const filteredAdvisoryReport = buildAdvisoryReport(
+  reportIgnoredAdvisories(
     devDependencyAdvisoryIds,
     severityIgnoredAuditAdvisories,
     excludedAuditAdvisories
   )
 
-  const lines = []
-  if (filteredAdvisoryReport.length > 0) {
-    lines.push(filteredAdvisoryReport)
+  if (outputFormat == "json") {
+    return await createJsonReport(filteredAuditAdvisories)
+  } else {
+    return await createTextReport(filteredAuditAdvisories)
   }
+}
+
+async function createTextReport(
+  filteredAuditAdvisories) {
+    
+  const lines = []
 
   filteredAuditAdvisories.forEach((a) => {
     const formattedSeverity = a.severity
@@ -229,10 +210,7 @@ async function createTextReport(
 }
 
 async function createJsonReport(
-  filteredAuditAdvisories,
-  devDependencyAdvisoryIds,
-  severityIgnoredAuditAdvisories,
-  excludedAuditAdvisories) {
+  filteredAuditAdvisories) {
 
     const report = []
     filteredAuditAdvisories.forEach((advisory) => {
