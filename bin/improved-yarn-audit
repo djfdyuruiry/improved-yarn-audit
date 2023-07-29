@@ -9,7 +9,8 @@ const {
   readFileSync,
   rmdirSync,
   statSync,
-  unlinkSync
+  unlinkSync,
+  writeFile
 } = require("fs")
 const { tmpdir } = require("os")
 const path = require("path")
@@ -24,6 +25,8 @@ const isWindows = platform === "win32"
 const packageInfo = require(joinPath(__dirname, "..", "package.json"))
 
 const optionFlags = {
+  outputFormat: ["--output-format", "-of"],
+  outputPath: ["--output-path", "-op"],
   severity: ["--min-severity", "-s"],
   exclude: ["--exclude", "-e"],
   retryNetworkIssues: ["--retry-on-network-failure", "-r"],
@@ -42,10 +45,18 @@ const severityToIntMap = {
   critical: 4
 }
 
+const outputFormats = [
+  "stdout",
+  "text",
+  "json"
+]
+
 const maxSeverityNameLength = 8
 
 const exclusionsFileName = ".iyarc"
 
+let outputFormat = "stdout"
+let outputPath = null
 let minSeverityName = "low"
 let minSeverity = severityToIntMap[minSeverityName]
 let excludedAdvisories = []
@@ -113,33 +124,27 @@ function checkForMissingExclusions(allAdvisories) {
   }
 }
 
-function buildAdvisoryReport(
+function reportIgnoredAdvisories(
   devDependencyAdvisoryIds,
   severityIgnoredAuditAdvisories,
   excludedAuditAdvisories
 ) {
-  let filteredAdvisoryReport = ""
-
   if (ignoreDevDependencies && devDependencyAdvisoryIds.length > 0) {
-    filteredAdvisoryReport +=
-      `\n${devDependencyAdvisoryIds.length} ignored because ` +
-      `they are dev dependencies\n`
+    console.warn(`${devDependencyAdvisoryIds.length} ignored because ` +
+      `they are dev dependencies\n`)
   }
 
   if (severityIgnoredAuditAdvisories.length > 0) {
-    filteredAdvisoryReport +=
-      `\n${severityIgnoredAuditAdvisories.length} ignored because ` +
-      `severity was lower than "${minSeverityName}"\n`
+    console.warn(`${severityIgnoredAuditAdvisories.length} ignored because ` +
+      `severity was lower than "${minSeverityName}"\n`)
   }
 
   if (excludedAuditAdvisories.length > 0) {
-    filteredAdvisoryReport += `\n${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`
+    console.warn(`${excludedAuditAdvisories.length} ignored because of advisory exclusions\n`)
   }
-
-  return filteredAdvisoryReport
 }
 
-function printAuditReport(
+async function createReport(
   filteredAuditAdvisories,
   devDependencyAdvisories,
   devDependencyAdvisoryIds,
@@ -157,15 +162,24 @@ function printAuditReport(
       )}\n`
   )
 
-  const filteredAdvisoryReport = buildAdvisoryReport(
+  console.log(`Found ${filteredAuditAdvisories.length} vulnerabilities\n`)
+  reportIgnoredAdvisories(
     devDependencyAdvisoryIds,
     severityIgnoredAuditAdvisories,
     excludedAuditAdvisories
   )
 
-  console.log(
-    `Found ${filteredAuditAdvisories.length} vulnerabilities\n${filteredAdvisoryReport}`
-  )
+  if (outputFormat == "json") {
+    return await createJsonReport(filteredAuditAdvisories)
+  } else {
+    return await createTextReport(filteredAuditAdvisories)
+  }
+}
+
+async function createTextReport(
+  filteredAuditAdvisories) {
+    
+  const lines = []
 
   filteredAuditAdvisories.forEach((a) => {
     const formattedSeverity = a.severity
@@ -175,19 +189,67 @@ function printAuditReport(
     const affectedModulePaths = flatMap(a.findings, (f) => f.paths)
     const affectedModules = affectedModulePaths.join(", ")
 
-    console.log(`Vulnerability Found:
+    lines.push(`Vulnerability Found:
 
   Severity: ${formattedSeverity}
   Modules: ${affectedModules}
-  URL: ${a.url}
-`)
+  URL: ${a.url}`)})
+
+  return await new Promise((resolve, reject) => {
+    if (outputFormat == "text") {
+      const file = createWriteStream(outputPath)
+      file.on("finish", () => { resolve(filteredAuditAdvisories.length) })
+      file.on("error", reject)
+      lines.forEach((line) => { file.write(`${line}\n\n`) });
+      file.end()
+    } else {
+      lines.forEach((line) => { console.log(`${line}\n`)})
+      resolve(filteredAuditAdvisories.length)
+    }
   })
+}
 
-  if (filteredAuditAdvisories.length > 0) {
-    console.log()
-  }
+async function createJsonReport(
+  filteredAuditAdvisories) {
 
-  console.log("Run `yarn audit` for more information")
+    const report = []
+    filteredAuditAdvisories.forEach((advisory) => {
+      report.push({
+        "type": "auditAdvisory",
+        "data": {
+          "resolution": {
+            "id": advisory.id,
+            "path": advisory.findings[0].paths[0], // TODO handle different paths for the same vulnerability
+            "dev": false,
+            "optional": false,
+            "bundled": false
+          },
+          "advisory": advisory
+        }
+      })
+    })
+    report.push({
+      "type": "auditSummary",
+        "data": {
+          "vulnerabilities": {
+            "info": filteredAuditAdvisories.filter(a => a.severity == "info").length,
+            "low": filteredAuditAdvisories.filter(a => a.severity == "low").length,
+            "moderate": filteredAuditAdvisories.filter(a => a.severity == "moderate").length,
+            "high": filteredAuditAdvisories.filter(a => a.severity == "high").length,
+            "critical": filteredAuditAdvisories.filter(a => a.severity == "critical").length,
+          },
+          // Excluding the yarn dependency counts for now
+        }
+    })
+
+
+    return await new Promise((resolve, reject) => {
+      const file = createWriteStream(outputPath)
+      file.on("finish", () => { resolve(filteredAuditAdvisories.length) })
+      file.on("error", reject)
+      file.write(JSON.stringify(report))
+      file.end()
+    })
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -465,17 +527,15 @@ async function runAuditReport() {
     }
   })
 
-  printAuditReport(
+  checkForMissingExclusions(allAdvisories)
+
+  return await createReport(
     filteredAuditAdvisories,
     devDependencyAdvisories,
     devDependencyAdvisoryIds,
     severityIgnoredAuditAdvisories,
     excludedAuditAdvisories
-  )
-
-  checkForMissingExclusions(allAdvisories)
-
-  return filteredAuditAdvisories.length
+  ) 
 }
 
 async function withTempDir(action, cleanupAction) {
@@ -513,12 +573,13 @@ function printUsageAndExit() {
 improved-yarn-audit [OPTIONS]
 
 Options:
-
   --min-severity, -s                  Minimum severity to treat as an error, default is low (info, low, moderate, high, critical)
   --exclude, -e                       CSV list of advisory ID's to ignore, e.x. 432,564 (this overrides .iyarc)
   --retry-on-network-failure, -r      Retry audit if NPM registry throws a network error
   --ignore-dev-deps, -i               Ignore advisories for dev dependencies
   --fail-on-missing-exclusions, -f    Return a non-zero exit code when advisory exclusions are no longer detected by yarn audit
+  --output-path, -op                  The path to the output file (if any) to be produced
+  --output-format, -of                The format of the output file to produce e.g. stdout, text or json
   --debug, -d                         Print out raw audit report's and advisory details
   --version, -v                       Print version info and exit
   --help, -h                          Show this information
@@ -658,6 +719,20 @@ function parseCommandLineArgs() {
       }
     }
 
+    if (isFlag(optionFlags.outputFormat, a) && !isNullOrEmpty(b)) {
+      if (outputFormats.indexOf(b) >= 0) {
+        outputFormat = b
+      } else {
+        errorAndExit(
+          `ERROR: Unrecognised --output-format option value: ${b.trim()}`
+        )
+      }
+    }
+
+    if (isFlag(optionFlags.outputPath, a) && !isNullOrEmpty(b)) {
+      outputPath = b
+    }
+
     if (isFlag(optionFlags.debug, a, b)) {
       debugEnabled = true
     }
@@ -705,6 +780,10 @@ async function main() {
 
       return runAuditReport()
     }, cleanupAuditResultsFile)
+
+    if (advisoryCount > 0) {
+      console.log("Run `yarn audit` for more information")
+    }
 
     exit(advisoryCount)
   } catch (e) {
