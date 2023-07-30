@@ -9,6 +9,7 @@ const {
   readFileSync,
   rmdirSync,
   statSync,
+  writeFileSync,
   unlinkSync
 } = require("fs")
 const { tmpdir } = require("os")
@@ -56,7 +57,7 @@ const maxSeverityNameLength = 8
 const exclusionsFileName = ".iyarc"
 
 let logEnabled = true
-let outputFormat = "stdout"
+let outputFormat = "text"
 let outputPath = null
 let minSeverityName = "low"
 let minSeverity = severityToIntMap[minSeverityName]
@@ -151,20 +152,6 @@ function reportIgnoredAdvisories(
   }
 }
 
-const writeOutput = async(writerProvider, outputText) =>
-  await new Promise((resolve, reject) => {
-    const writer = writerProvider()
-
-    writer.on("finish", resolve)
-    writer.on("error", reject)
-
-    writer.write(outputText)
-
-    if (writer !== process.stdout) {
-      writer.end()
-    }
-  })
-
 async function createReport(
   filteredAuditAdvisories,
   devDependencyAdvisories,
@@ -190,14 +177,15 @@ async function createReport(
     excludedAuditAdvisories
   )
 
-  const outputWriterProvider = isNullOrEmpty(outputPath) 
-    ? () => process.stdout
-    : () => createWriteStream(outputPath)
   const outputText = outputFormat === "text" 
     ? createTextReport(filteredAuditAdvisories)
     : await createJsonReport(filteredAuditAdvisories, outputFormat === "yarn-json")
 
-  await writeOutput(outputWriterProvider, `${outputText}\n`)
+  if (isNullOrEmpty(outputPath)) {
+    console.log(`${outputText}`)
+  } else {
+    writeFileSync(outputPath, outputText)
+  }
 
   return filteredAuditAdvisories.length
 }
@@ -548,14 +536,14 @@ async function withTempDir(action, cleanupAction) {
   try {
     return await action(tempDirPath)
   } finally {
-    cleanupAction()
+    await cleanupAction()
 
     rmdirSync(tempDirPath, { recursive: true })
   }
 }
 
-function withTempFile(action, cleanupAction) {
-  return withTempDir((tempDirPath) => {
+async function withTempFile(action, cleanupAction) {
+  return await withTempDir((tempDirPath) => {
     const randomName = randomBytes(16).toString("hex")
     const tmpFilePath = joinPath(tempDirPath, randomName)
 
