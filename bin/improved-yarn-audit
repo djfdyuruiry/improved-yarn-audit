@@ -195,7 +195,7 @@ async function createReport(
     : () => createWriteStream(outputPath)
   const outputText = outputFormat === "text" 
     ? createTextReport(filteredAuditAdvisories)
-    : createJsonReport(filteredAuditAdvisories, outputFormat === "yarn-json")
+    : await createJsonReport(filteredAuditAdvisories, outputFormat === "yarn-json")
 
   await writeOutput(outputWriterProvider, `${outputText}\n`)
 
@@ -218,41 +218,40 @@ const createTextReport = filteredAuditAdvisories =>
   URL: ${a.url}`
   }).join("\n\n")
 
-function createJsonReport(filteredAuditAdvisories, produceYarnJson) {
+async function createJsonReport(filteredAuditAdvisories, produceYarnJson) {
   const report = filteredAuditAdvisories.map(a =>  {
     return {
       type: "auditAdvisory",
       data: {
         resolution: {
           id: a.id,
-          // TODO handle different paths for the same vulnerability
+          // TODO: handle different paths for the same vulnerability
           path: a.findings[0].paths[0], 
-          dev: false,
-          optional: false,
-          bundled: false
+          dev: a._resolution.dev,
+          optional: a._resolution.optional,
+          bundled: a._resolution.bundled
         },
         advisory: a
       }
     }
   })
 
-  report.push({
-    type: "auditSummary",
-      data: {
-        vulnerabilities: {
-          info: filteredAuditAdvisories.filter(a => a.severity === "info").length,
-          low: filteredAuditAdvisories.filter(a => a.severity === "low").length,
-          moderate: filteredAuditAdvisories.filter(a => a.severity === "moderate").length,
-          high: filteredAuditAdvisories.filter(a => a.severity === "high").length,
-          critical: filteredAuditAdvisories.filter(a => a.severity === "critical").length,
-        },
-        // Excluding the yarn dependency counts for now
-      }
-  })
+  const getAdvisoryCountBySeverity = s => filteredAuditAdvisories.filter(a => a.severity === s).length
+  const auditSummary = await getAuditSummary()
+
+  auditSummary.data.vulnerabilities = {
+    info: getAdvisoryCountBySeverity("info"),
+    low: getAdvisoryCountBySeverity("low"),
+    moderate: getAdvisoryCountBySeverity("moderate"),
+    high: getAdvisoryCountBySeverity("high"),
+    critical: getAdvisoryCountBySeverity("critical")
+  }
+
+  report.push(auditSummary)
 
   return produceYarnJson 
-    ? report.map(e => toJson(e)).join("\n") 
-    : json = toJson(report)
+    ? report.map(e => JSON.stringify(e)).join("\n") 
+    : json = JSON.stringify(report)
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -284,7 +283,7 @@ async function getAuditSummary() {
 
   await iterateOverAuditResults((l) => (auditSummary = l))
 
-  return auditSummary
+  return JSON.parse(auditSummary)
 }
 
 async function handleAuditNetworkError(output) {
@@ -472,7 +471,7 @@ async function runAuditReport() {
 
   logDebug(async () => {
     let auditSummaryJson = await getAuditSummary()
-    let auditSummary = toJson(JSON.parse(auditSummaryJson))
+    let auditSummary = toJson(auditSummaryJson)
 
     return `Audit summary:\n${auditSummary}\n`
   })
@@ -496,6 +495,7 @@ async function runAuditReport() {
     }
 
     const result = potentialResult.data.advisory
+    result._resolution = potentialResult.data.resolution
 
     allAdvisories.push(result)
 
