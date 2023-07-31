@@ -165,13 +165,13 @@ runTests() {
   testExitCode "some of the exclusions passed via .iyarc are missing and --fail-on-missing-exclusions is passed" "1" "$?"
 
   # test 18
-  expectedVersion=$(echo $(grep '"version": ' ../package.json | cut -d '"' -f 4))
+  expectedVersion=$(echo $(grep '"version": ' "${scriptPath}/../package.json" | cut -d '"' -f 4))
 
   outputVersion=$(callIya -v 2>&1)
   testExitCode "--version is passed" "1" "$?"
 
   if [ "${outputVersion}" != "${expectedVersion}" ]; then
-    echo "TEST FAILURE: Incorrect version was output: ${outputVersion} - Expected: ${expectedVersion}"
+    echo "✗ TEST FAILURE: Incorrect version was output: ${outputVersion} - Expected: ${expectedVersion}"
     testFailed=true
   fi
 
