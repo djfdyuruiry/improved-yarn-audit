@@ -100,7 +100,7 @@ async function logDebug(strOrFunc) {
   console.log(`DEBUG: ${output}`)
 }
 
-function log(str) {
+function log(str = "") {
   if (logEnabled) {
     console.log(str)
   }
@@ -185,9 +185,15 @@ async function printAuditReport(
     excludedAuditAdvisories
   )
 
-  const outputText = outputFormat === "text" 
-    ? createTextReport(filteredAuditAdvisories)
-    : await createJsonReport(filteredAuditAdvisories, outputFormat === "yarn-json")
+  let outputText
+
+  if (outputFormat === "text") {
+    outputText = createTextReport(filteredAuditAdvisories)
+  } else if (yarnMajorVersion === 1) {
+    outputText = await createV1JsonReport(filteredAuditAdvisories, outputFormat === "yarn-json")
+  } else {
+    outputText = createV3JsonReport(filteredAuditAdvisories)
+  }
 
   if (isNullOrEmpty(outputPath)) {
     console.log(`${outputText}`)
@@ -214,7 +220,7 @@ const createTextReport = filteredAuditAdvisories =>
   URL: ${a.url}`
   }).join("\n\n")
 
-async function createJsonReport(filteredAuditAdvisories, produceYarnJson) {
+async function createV1JsonReport(filteredAuditAdvisories,  produceYarnJson) {
   const report = filteredAuditAdvisories.map(a =>  {
     return {
       type: "auditAdvisory",
@@ -233,7 +239,7 @@ async function createJsonReport(filteredAuditAdvisories, produceYarnJson) {
   })
 
   const getAdvisoryCountBySeverity = s => filteredAuditAdvisories.filter(a => a.severity === s).length
-  const auditSummary = await getAuditSummary()
+  const auditSummary = await getV1AuditSummary()
 
   auditSummary.data.vulnerabilities = {
     info: getAdvisoryCountBySeverity("info"),
@@ -248,6 +254,32 @@ async function createJsonReport(filteredAuditAdvisories, produceYarnJson) {
   return produceYarnJson 
     ? report.map(e => JSON.stringify(e)).join("\n") 
     : json = JSON.stringify(report)
+}
+
+function createV3JsonReport(filteredAuditAdvisories) {
+  const { dependencies, devDependencies, optionalDependencies, totalDependencies } = getV3AuditSummary()
+  const getAdvisoryCountBySeverity = s => filteredAuditAdvisories.filter(a => a.severity === s).length
+
+  const report = {
+    actions: [],
+    advisories: filteredAuditAdvisories,
+    metadata: {
+      dependencies,
+      devDependencies,
+      optionalDependencies,
+      totalDependencies,
+      vulnerabilities: {
+        info: getAdvisoryCountBySeverity("info"),
+        low: getAdvisoryCountBySeverity("low"),
+        moderate: getAdvisoryCountBySeverity("moderate"),
+        high: getAdvisoryCountBySeverity("high"),
+        critical: getAdvisoryCountBySeverity("critical")
+      }
+    },
+    muted: []
+  }
+
+  return JSON.stringify(report)
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -272,7 +304,7 @@ function parseAuditJson(jsonString) {
   }
 }
 
-async function getAuditSummary() {
+async function getV1AuditSummary() {
   logDebug("Getting yarn audit summary")
 
   let auditSummary = ""
@@ -280,6 +312,12 @@ async function getAuditSummary() {
   await iterateOverAuditResults((l) => (auditSummary = l))
 
   return JSON.parse(auditSummary)
+}
+
+function getV3AuditSummary() {
+  logDebug("Getting yarn audit summary")
+
+  return getV3AuditReport().metadata
 }
 
 async function handleAuditNetworkError(invokeYarnAuditFunc) {
@@ -487,7 +525,7 @@ async function invokeYarnAuditV1() {
 }
 
 async function runYarnAudit(invokeYarnAuditFunc) {
-  console.log("Running yarn audit...\n")
+  log("Running yarn audit...\n")
 
   const exitCode = await invokeYarnAuditFunc()
 
@@ -502,12 +540,16 @@ async function runYarnAudit(invokeYarnAuditFunc) {
   }
 }
 
+const getV3AuditReport = () => JSON.parse(readFileSync(auditResultsFilePath).toString())
+
 async function runAuditReportV3(auditReportSink, devDependenciesRegex) {
   logDebug("executing runAuditReportV3()")
 
   await runYarnAudit(invokeYarnAuditV3)
 
-  const yarnAuditReport = JSON.parse(readFileSync(auditResultsFilePath).toString())
+  logDebug("Reading Yarn audit report JSON")
+
+  const yarnAuditReport = getV3AuditReport()
 
   logDebug(() => `Audit summary:\n${toJson(yarnAuditReport.metadata)}\n`)
 
@@ -522,7 +564,7 @@ async function runAuditReportV1(auditReportSink, devDependenciesRegex) {
   await runYarnAudit(invokeYarnAuditV1)
 
   logDebug(async () => {
-    let auditSummaryJson = await getAuditSummary()
+    let auditSummaryJson = await getV1AuditSummary()
     let auditSummary = toJson(JSON.parse(auditSummaryJson))
 
     return `Audit summary:\n${auditSummary}\n`
@@ -539,6 +581,7 @@ async function runAuditReportV1(auditReportSink, devDependenciesRegex) {
     }
 
     const result = potentialResult.data.advisory
+    result._resolution = potentialResult.data.resolution
 
     await processAuditResult(result, auditReportSink, devDependenciesRegex)
   })
@@ -603,7 +646,7 @@ async function runAuditReport(yarnMajorVersion) {
     : runAuditReportV3(auditReportSink, devDependenciesRegex)
   )
 
-  printAuditReport(auditReportSink, yarnMajorVersion)
+  await printAuditReport(auditReportSink, yarnMajorVersion)
 
   checkForMissingExclusions(auditReportSink.allAdvisories)
 
@@ -831,7 +874,6 @@ function parseCommandLineArgs() {
         )
       }
     }
-    log("Run `yarn audit` for more information")
 
     if (isFlag(optionFlags.outputFormat, a) && !isNullOrEmpty(b)) {
       outputFormat = b.trim().toLowerCase()
@@ -891,7 +933,7 @@ async function main() {
     errorAndExit(`Yarn version not supported: ${yarnVersion}`)
   }
 
-  console.log(`Detected Yarn Version: v${yarnVersion}`)
+  log(`Detected Yarn Version: v${yarnVersion}`)
 
   logDebug(`shouldRetryNetworkErrors = ${shouldRetryNetworkErrors}`)
   logDebug(`ignoreDevDependencies = ${ignoreDevDependencies}`)
@@ -914,7 +956,7 @@ async function main() {
     }, cleanupAuditResultsFile)
 
     if (advisoryCount > 0) {
-      log(`Run 'yarn${yarnMajorVersion === 3 ? " npm " : " "}audit' for more information`)
+      log(`\nRun 'yarn${yarnMajorVersion === 3 ? " npm " : " "}audit' for more information`)
     }
 
     exit(advisoryCount)
