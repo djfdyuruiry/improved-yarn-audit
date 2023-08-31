@@ -20,6 +20,10 @@ Currently `yarn audit` has several issues making it difficult to use in a CI pip
 
 `improved-yarn-audit` provides a wrapper around the `yarn audit` command which addresses all of the above problems.
 
+### ⚠ Yarn v2/v3 Note
+
+Currently there is [an issue](https://github.com/yarnpkg/berry/issues/3945) where some vulnerabilities are not being reported, which is scheduled to be fixed in Yarn 4. You can get [the fix](https://github.com/yarnpkg/berry/pull/5501) by installing Yarn `canary` to get over this problem - see https://yarnpkg.com/cli/set/version
+
 ## Installing
 
 Run:
