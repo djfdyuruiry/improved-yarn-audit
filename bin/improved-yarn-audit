@@ -340,6 +340,7 @@ async function streamYarnAuditOutput(auditParams, auditResultsFileStream) {
   const yarnBinaryPostFix = isWindows ? ".cmd" : ""
   const yarnProcess = spawn(`yarn${yarnBinaryPostFix}`, auditParams, {
     env: env,
+    shell: isWindows,
     stdio: ["pipe", auditResultsFileStream, auditResultsFileStream]
   })
 
