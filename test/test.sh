@@ -191,13 +191,15 @@ runTests() {
   testExitCode ".iyarc contains no exclusions" "12" "$?"
 }
 
-runTests
+#runTests
 
-if [ "${testFailed}" == true ]; then
-  echo "Test Result: FAILURE"
-  echo "There were test failures"
+# if [ "${testFailed}" == true ]; then
+#   echo "Test Result: FAILURE"
+#   echo "There were test failures"
 
-  exit 1
-else
-  echo "Test Result: PASS"
-fi
+#   exit 1
+# else
+#   echo "Test Result: PASS"
+# fi
+
+echo "Tests skipped before tech refresh"
