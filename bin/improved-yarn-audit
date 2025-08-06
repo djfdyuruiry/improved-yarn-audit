@@ -114,7 +114,7 @@ function checkForMissingExclusions(allAdvisories) {
     return
   }
 
-  log()
+  log("")
 
   log(
     "WARNING: One or more excluded audit advisories were missing from yarn audit output: " +
@@ -257,10 +257,9 @@ function parseAuditJson(jsonString) {
   try {
     return JSON.parse(jsonString)
   } catch (ex) {
-    console.error(`ERROR: Unable to parse yarn audit output: ${ex}`)
+    console.error(`ERROR: Unable to parse yarn audit output: ${ex} / `, jsonString)
     console.error("Try running `yarn audit` for more info")
-
-    process.exit(1)
+    return {}
   }
 }
 
@@ -754,7 +753,7 @@ async function main() {
   parseCommandLineArgs()
 
   log(`Improved Yarn Audit - v${packageInfo.version}`)
-  log()
+  log("")
 
   logDebug(`shouldRetryNetworkErrors = ${shouldRetryNetworkErrors}`)
   logDebug(`ignoreDevDependencies = ${ignoreDevDependencies}`)
