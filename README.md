@@ -103,6 +103,20 @@ As of April 2019 there are outstanding network issues with the NPM registry audi
 yarn run improved-yarn-audit --retry-on-network-failure
 ```
 
+## NPX
+
+You can run this tool without installing it in your project by using `npx`:
+
+```
+npx improved-yarn-audit --help
+```
+
+You can specify a specific version if you wish:
+
+```
+npx improved-yarn-audit@3.0.4
+```
+
 ## NPM Users
 
 If you are an NPM fan looking for a similar solution, checkout the [better-npm-audit](https://www.npmjs.com/package/better-npm-audit) package.
