@@ -7,7 +7,7 @@ const {
   createWriteStream,
   mkdtempSync,
   readFileSync,
-  rmdirSync,
+  rmSync,
   statSync,
   writeFileSync,
   unlinkSync
@@ -538,7 +538,7 @@ async function withTempDir(action, cleanupAction) {
   } finally {
     await cleanupAction()
 
-    rmdirSync(tempDirPath, { recursive: true })
+    rmSync(tempDirPath, { recursive: true, force: true })
   }
 }
 
